@@ -18,6 +18,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.use('/api', (req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
 app.use(express.static(path.join(process.cwd(), "public")));
 app.use(express.static(path.join(process.cwd(), "assets")));
 app.use(express.static(path.join(process.cwd(), "product")));

@@ -123,7 +123,7 @@ h2{margin-top:0;color:var(--green);}
 <script>
 
 const RAZORPAY_KEY = "rzp_test_S8l9sAf2Mc1cyv";
-const BACKEND = "http://localhost:3000";
+const BACKEND = "";
 
 let checkoutData = {};
 
@@ -287,12 +287,26 @@ await loadAddress();
 /* ================= LOAD ADDRESS ================= */
 
 async function loadAddress() {
-  const res = await fetch(`${BACKEND}/api/profile/profiledata`, {
-    credentials: "include"
-  });
-  const data = await res.json();
-  checkoutData.address = data.address;
-  renderAddress(data);
+  try {
+    const res = await fetch(`/api/profile/profiledata`, {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store"
+    });
+
+    if (!res.ok) {
+      alert("Please login again");
+      return;
+    }
+
+    const data = await res.json();
+    checkoutData.address = data.address;
+    renderAddress(data);
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load address");
+  }
 }
 
 function renderAddress(data){
