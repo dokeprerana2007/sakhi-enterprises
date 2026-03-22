@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Manage Products - Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="app">
+    <div class="sidebar">
+      <h2>Sakhi Admin</h2>
+      <ul class="nav">
+        <li><a href="admin-dashboard.html">Dashboard</a></li>
+        <li><a href="admin-products.html" class="active">Products</a></li>
+        <li><a href="admin-orders.html">Orders</a></li>
+        <li><a href="admin-users.html">Users</a></li>
+        <li><a href="admin-settings.html">Settings</a></li>
+        <li><a href="#" onclick="logout()">Logout</a></li>
+      </ul>
+    </div>
+    <div class="main">
+      <div class="top"><h3>Products</h3><button class="btn" onclick="showAdd()">Add Product</button></div>
+      <div id="formWrap" style="margin-bottom:12px;display:none">
+        <div class="card">
+          <form id="pForm" class="form-row">
+            <input id="pname" placeholder="Name" required>
+            <input id="pprice" placeholder="Price" type="number" required>
+            <input id="pcat" placeholder="Category">
+            <div style="display:flex;gap:8px;align-items:flex-start;flex-direction:column;flex-basis:100%">
+              <textarea id="pimages" placeholder="Image URLs (one per line or comma-separated)" style="width:100%;min-height:70px"></textarea>
+              <div style="display:flex;gap:8px;align-items:center">
+                <input id="pfile" type="file" accept="image/*" style="display:inline-block" />
+                <button id="uploadBtn" type="button" class="btn">Upload Image</button>
+                <span id="uploadStatus" style="opacity:0.85;font-size:0.9rem"></span>
+              </div>
+            </div>
+            <input id="pstock" placeholder="Stock" type="number">
+            <textarea id="pdesc" placeholder="Description" style="flex-basis:100%"></textarea>
+            <div><button class="btn" type="submit">Save</button> <button type="button" class="btn secondary" onclick="hideAdd()">Cancel</button></div>
+          </form>
+        </div>
+      </div>
+      <div id="list">Loading products...</div>
+    </div>
+  </div>
+  <script type="module">
+    import { requireAuth, logout, fetchProducts, createProduct, editProduct, removeProduct } from './admin.js';
+    requireAuth(); window.logout = logout;
+    const formWrap = document.getElementById('formWrap');
+    let editId = null;
+    function showAdd(){ editId=null; formWrap.style.display='block'; document.getElementById('pForm').reset(); document.getElementById('pname').focus(); }
+    function hideAdd(){ formWrap.style.display='none'; }
+    // expose to global for inline onclick attributes (module scope is local)
+    window.showAdd = showAdd;
+    window.hideAdd = hideAdd;
+    const pForm = document.getElementById('pForm');
+    pForm.addEventListener('submit', async e=>{
+      e.preventDefault();
+      const saveBtn = pForm.querySelector('button[type=submit]');
+      saveBtn.disabled = true;
+      // collect images as array (split by newline or comma)
+      const rawImgs = document.getElementById('pimages').value || '';
+      const imgs = rawImgs.split(/\r?\n|,/).map(s=>s.trim()).filter(Boolean);
+      const data = { name:document.getElementById('pname').value.trim(), price:Number(document.getElementById('pprice').value) || 0, category:document.getElementById('pcat').value.trim(), images: imgs, image: imgs[0] || '', stock:Number(document.getElementById('pstock').value) || 0, description:document.getElementById('pdesc').value.trim() };
+      try{
+        let res;
+        if(editId){ res = await editProduct(editId,data); }
+        else{ res = await createProduct(data); }
+        if(res && res._id){
+          hideAdd(); load();
+        } else {
+          alert(res.message || 'Could not save product');
+        }
+      }catch(err){ alert('Error: ' + (err.message || err)); }
+      finally{ saveBtn.disabled = false; }
+    });
+
+    function bindList(products){
+      if(!products || products.length===0) return document.getElementById('list').textContent='No products';
+      const html = ['<table><tr><th>Sr.</th><th>Name</th><th>Price</th><th>Stock</th><th>Category</th><th></th></tr>'];
+      for(let i=0;i<products.length;i++){
+        const p = products[i];
+        const price = (p && (p.price || p.price === 0)) ? p.price : (p && p.pricing) || 0;
+        const displayPrice = '₹' + Number(price).toLocaleString();
+        html.push(`<tr><td>${i+1}</td><td>${p.name || ''}</td><td>${displayPrice}</td><td>${(p.stock||0)}</td><td>${p.category||''}</td><td><button class="btn" onclick="onEdit('${p._id || p.id}')">Edit</button> <button class="btn secondary" onclick="onDel('${p._id || p.id}')">Delete</button></td></tr>`);
+      }
+      html.push('</table>'); document.getElementById('list').innerHTML = html.join('');
+    }
+
+    window.onEdit = async (id)=>{
+      try {
+        const products = await fetchProducts();
+        const p = products.find(x=>x._id===id);
+        if(!p) {
+          alert('Product not found');
+          return;
+        }
+        editId = id; formWrap.style.display='block'; document.getElementById('pname').value=p.name; document.getElementById('pprice').value=p.price; document.getElementById('pcat').value=p.category||''; document.getElementById('pimages').value=(Array.isArray(p.images) && p.images.length)? p.images.join('\n') : (p.image||''); document.getElementById('pstock').value=p.stock||0; document.getElementById('pdesc').value=p.description||'';
+      } catch (err) {
+        console.error('Error editing product:', err);
+        alert('Error editing product: ' + err.message);
+      }
+    }
+
+    window.onDel = async (id)=>{ 
+      if(!confirm('Delete product?')) return; 
+      try {
+        await removeProduct(id); 
+        load(); 
+      } catch (err) {
+        console.error('Error deleting product:', err);
+        alert('Error deleting product: ' + err.message);
+      }
+    }
+
+    async function load(){ 
+      try {
+        const p = await fetchProducts(); 
+        bindList(p); 
+      } catch (err) {
+        console.error('Error loading products:', err);
+        document.getElementById('list').textContent = 'Error loading products: ' + err.message;
+      }
+    }
+    load();
+
+    // upload button logic
+    const uploadBtn = document.getElementById('uploadBtn');
+    const pfile = document.getElementById('pfile');
+    const uploadStatus = document.getElementById('uploadStatus');
+    uploadBtn.addEventListener('click', async ()=>{
+      const f = pfile.files && pfile.files[0];
+      if(!f){ alert('Select a file first'); return; }
+      uploadBtn.disabled = true; uploadStatus.textContent = 'Uploading...';
+      try{
+        const res = await import('./admin.js').then(m=>m.uploadImageFile(f));
+        if(res && res.url){
+          // append to images textarea
+          const ta = document.getElementById('pimages');
+          ta.value = (ta.value ? (ta.value + '\n') : '') + res.url;
+          uploadStatus.textContent = 'Uploaded';
+        } else {
+          uploadStatus.textContent = (res && res.message) || 'Upload failed';
+        }
+      }catch(err){ uploadStatus.textContent = 'Error'; }
+      finally{ uploadBtn.disabled = false; setTimeout(()=>uploadStatus.textContent='',2000); }
+    });
+  </script>
+</body>
+</html>

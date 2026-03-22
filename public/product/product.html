@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sakhi Enterpries - Box Packing Material</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="product.css"> 
+</head>
+<body>
+<div class="wrap">
+  <!-- REPLACE lines 12-39 in product.html with this header -->
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div class="title">
+      <img class="brand-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M20 6h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm11 14H4V8h16v10zM12 11.5l-3 3-1.5-1.5L7.09 14.91 9 16.82l4.91-4.91L12 11.5z'/%3E%3C/svg%3E" alt="logo">
+      <span class="site-title-text">Sakhi Enterpries - Box Packing Material</span>
+    </div>
+
+    <div class="header-controls">
+      <a href="cart.html" style="text-decoration:none;">
+  <button id="cart-button" class="btn-action header-btn btn">
+    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+    <span>Cart</span>
+    <span id="cart-count" class="badge" aria-hidden="true"></span>
+  </button>
+</a>
+
+
+<button onclick="window.location.href='myorders.html'" class="btn">
+    MyOrders
+</button>
+<button onclick="window.location.href='../index.html'" class="btn">
+    Go to Home
+</button>
+ 
+    </div>
+  </div>
+</header>
+<!-- end replacement -->
+
+
+  <div class="controls-panel">
+    <div class="search-bar"><input id="search" type="text" placeholder="Search product name, category, or material..."></div>
+    <div class="filter-groups-wrapper">
+      <div>
+        <h4 class="filter-group-title">Filter by Product Category:</h4>
+        <select id="category-select" class="filter-dropdown"></select>
+      </div>
+      <div>
+        <h4 class="filter-group-title">Filter by Material Type:</h4>
+        <select id="type-select" class="filter-dropdown"></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="product-grid" id="product-grid" aria-live="polite"></div>
+</div>
+
+<footer class="page-footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h4>Sakhi Enterpries</h4>
+      <p>Your trusted partner for high-quality,<br> customized box packing materials,<br> shipping supplies, and protective <br>packaging solutions.</p>
+    </div>
+    <div class="footer-section">
+      <h4>Contact Info</h4>
+      <p>Email: sales@sakhienterpries.com</p>
+      <p>Phone: +91 98765 43210</p>
+      <p>Address:Kandar,Maharashtra, India</p>
+    </div>
+  </div>
+  <div class="copyright">&copy; 2024 Sakhi Enterpries. All Rights Reserved.</div>
+</footer>
+
+<div class="modal" id="product-modal" role="dialog" aria-modal="true">
+  <div class="modal-box" role="document" id="modal-box">
+    <div class="modal-close" id="modal-close" aria-label="Close">✕</div>
+
+    <div class="modal-content">
+      <div class="modal-media">
+        <div class="main-image" id="main-image-wrapper">
+          <button class="carousel-arrow left" id="carousel-prev" aria-label="Previous" style="display:none">‹</button>
+          <img id="modal-image" src="" alt="Product image" />
+          <button class="carousel-arrow right" id="carousel-next" aria-label="Next" style="display:none">›</button>
+        </div>
+
+        <!-- modal info text restored but hidden so JS can access elements without showing them -->
+        <div id="modal-info-text" aria-live="polite" style="display:none">
+          <strong id="info-title" style="font-size:1.05rem"></strong>
+          <span id="info-price" style="font-weight:700;color:var(--brand-primary);margin-top:6px;display:inline-block"></span>
+          <span id="info-desc" style="display:block;margin-top:8px;color:rgba(0,0,0,0.8)"></span>
+          <strong style="display:block;margin-top:10px">Order Configuration & Pricing</strong>
+        </div>
+
+        <!-- Visible heading matching screenshot -->
+        <h3 class="more-views">More Product Views</h3>
+        <div class="thumbs" id="modal-thumbs" aria-hidden="false"></div>
+      </div>
+
+      <div class="modal-right">
+        <h2 id="modal-name">Product Name</h2>
+        <div class="price" id="modal-price">Starting at ₹ 0</div>
+        <p id="modal-desc">Product detailed description goes here...</p>
+
+        <!-- Configure Your Order section removed visually; containers kept for JS compatibility -->
+        <div class="section-title" aria-labelledby="configure-title" style="display:none">
+          <div id="modal-options-container"></div>
+          <div id="modal-custom-options" style="margin-top:12px"></div>
+        </div>
+
+        <div style="margin-top:18px">
+          <h4 style="margin:0 0 8px 0">Specify Custom Details (Required for print/s)</h4>
+          <div style="display:grid;grid-template-columns:1fr;gap:10px;margin-top:8px">
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="file" id="file-upload-input" style="display:none" accept="image/*,.pdf,.ai,.eps,.svg">
+              <input id="spec-logo" type="text" placeholder="Upload file name or description/link..." class="custom-input" />
+              <button id="upload-file-btn" class="btn-action" style="padding:8px 10px;background:var(--brand-secondary)">Upload</button>
+            </div>
+            <input id="spec-color" class="custom-input" type="text" placeholder="e.g., Pantone 350C or Forest Green" />
+            <textarea id="spec-design" rows="3" class="custom-input" placeholder="Describe the layout, font, or placement of the design/logo."></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;padding-top:18px;border-top:1px solid #e0e0e0">
+          <div style="display:flex;gap:12px;margin-bottom:16px;">
+            <div style="display:flex;flex-direction:column;flex:1;align-items:center;">
+              <div style="font-weight:700;margin-bottom:8px">Quantity:</div>
+              <div class="quantity-container">
+                <button id="qty-minus">−</button>
+                <input id="qty-input" type="number" value="1" min="1" max="999999" />
+                <button id="qty-plus">+</button>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;flex:1;align-items:center;">
+              <div style="font-weight:700;color:var(--text-primary);margin-bottom:4px">Order Total:</div>
+              <div class="total-price" id="total-price-display">₹ 0</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button id="add-to-cart-btn" class="btn-action" style="flex:1;padding:14px 20px;">Add to Cart</button>
+           <a href="checkout.html"
+   id="order-now-btn"
+   class="btn-action order-link"
+   style="flex:1;padding:14px 20px;text-align:center;">
+  Order Now
+</a>
+
+        </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<script src="product.js"></script>
+<script>
+fetch("/profiledata", { credentials:"include" })
+  .then(res=>{
+    if(res.status!==200){
+      window.location.href="/login.html";
+    }
+  });
+</script>
+
+
+</body>
+</html>

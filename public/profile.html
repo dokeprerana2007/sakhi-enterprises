@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Profile - Sakhi Enterprises</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e9f7ec;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      overflow: hidden;
+      border-top: 6px solid #0b6b33;
+    }
+
+    .sidebar {
+      width: 260px;
+      background-color: #0b6b33;
+      color: white;
+      padding: 30px 20px;
+      float: left;
+      min-height: 500px;
+    }
+
+    .sidebar h2 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      display: block;
+      background-color: white;
+      color: #0b6b33;
+      padding: 10px 15px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .sidebar a:hover {
+      background-color: #d9f3e2;
+    }
+
+    .profile-section {
+      margin-left: 260px;
+      padding: 40px;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background-color: #0b6b33;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 36px;
+      font-weight: bold;
+      margin-right: 20px;
+    }
+
+    .profile-header h3 {
+      font-size: 24px;
+      color: #0b6b33;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px 40px;
+      margin-top: 20px;
+    }
+
+    .info-item label {
+      font-weight: bold;
+      font-size: 14px;
+      color: #0b6b33;
+    }
+
+    .info-item p {
+      margin-top: 5px;
+      color: #333;
+      font-size: 15px;
+      padding: 10px;
+      background: #f7fff9;
+      border-radius: 6px;
+      border: 1px solid #bcdac7;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        float: none;
+      }
+
+      .profile-section {
+        margin-left: 0;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="sidebar">
+    <h2>My Account</h2>
+    <a href="index.html">Back to Home</a>
+    <a href="./product/myorders.html">My Orders</a>
+  </div>
+
+  <div class="profile-section">
+
+    <div class="profile-header">
+      <div class="avatar" id="avatar">?</div>
+      <h3 id="user-name">User</h3>
+    </div>
+
+    <div class="info-grid" id="profile-info">
+      <p>Loading user details...</p>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+fetch('/api/profile/profiledata', { credentials: "include" })
+
+  .then(res => {
+    if (!res.ok) throw new Error("Unauthorized");
+    return res.json();
+  })
+
+  .then(data => {
+
+    // Save address globally
+    window.profileAddress = data.address || null;
+
+    const avatarLetter = (data.username || '?')[0].toUpperCase();
+    document.getElementById('avatar').textContent = avatarLetter;
+    document.getElementById('user-name').textContent = data.username;
+
+
+    // Check real address
+    const hasAddress =
+      data.address &&
+      data.address.fullName &&
+      data.address.street &&
+      data.address.city &&
+      data.address.pincode;
+
+
+    const cleanAddress = hasAddress
+      ? `${data.address.fullName}, ${data.address.street}, ${data.address.city}, ${data.address.state}-${data.address.pincode}, ${data.address.country}`
+      : "";
+
+
+    let addressSection = "";
+
+
+    // New user
+    if (!hasAddress) {
+
+      addressSection = `
+        <div style="grid-column:1/-1; margin-top:20px;">
+          <button onclick="showAddressForm(this)"
+            style="padding:10px 16px;
+                   background:#0b6b33;
+                   color:white;
+                   border:none;
+                   border-radius:6px;
+                   cursor:pointer;">
+            Add Address
+          </button>
+        </div>
+      `;
+
+    } 
+    
+    // Old user
+    else {
+
+      addressSection = `
+        <div class="info-item" style="grid-column:1/-1;">
+          <label>Address</label>
+          <p>${cleanAddress}</p>
+        </div>
+
+        <div style="grid-column:1/-1; margin-top:15px;">
+          <button onclick="showAddressForm(this)"
+            style="padding:10px 16px;
+                   background:#0b6b33;
+                   color:white;
+                   border:none;
+                   border-radius:6px;
+                   cursor:pointer;">
+            Change Address
+          </button>
+        </div>
+      `;
+
+    }
+
+
+    document.getElementById('profile-info').innerHTML = `
+
+      <div class="info-item">
+        <label>Username</label>
+        <p>${data.username || ''}</p>
+      </div>
+
+      <div class="info-item">
+        <label>Email</label>
+        <p>${data.email || ''}</p>
+      </div>
+
+      <div class="info-item">
+        <label>Phone</label>
+        <p>${data.phone || ''}</p>
+      </div>
+
+      ${addressSection}
+
+      <div id="address-form"
+           style="display:none; grid-column:1/-1; margin-top:20px;">
+
+        <h4 style="color:#0b6b33; margin-bottom:10px;">
+          ${hasAddress ? "Update Address" : "Add New Address"}
+        </h4>
+
+        <input id="new-name" placeholder="Full Name"
+               style="margin:5px 0;padding:8px;width:100%">
+
+        <input id="new-address" placeholder="Street Address"
+               style="margin:5px 0;padding:8px;width:100%">
+
+        <input id="new-city" placeholder="City"
+               style="margin:5px 0;padding:8px;width:100%">
+
+        <input id="new-state" placeholder="State"
+               style="margin:5px 0;padding:8px;width:100%">
+
+        <input id="new-pincode" placeholder="Postal Code"
+               style="margin:5px 0;padding:8px;width:100%">
+
+        <input id="new-country" placeholder="Country"
+               style="margin:5px 0;padding:8px;width:100%">
+
+
+        <button onclick="saveAddress()"
+          style="margin-top:10px;
+                 padding:10px 16px;
+                 background:#2e7d32;
+                 color:white;
+                 border:none;
+                 border-radius:6px;
+                 cursor:pointer;">
+          Save Address
+        </button>
+
+      </div>
+    `;
+
+  })
+
+
+  .catch(err => {
+    alert('Please log in to view your profile.');
+    window.location.href = '/login.html';
+  });
+
+
+
+// Show form
+function showAddressForm(btn) {
+
+  btn.style.display = "none";
+
+  const form = document.getElementById("address-form");
+  form.style.display = "block";
+
+  if (!window.profileAddress) return;
+
+
+  document.getElementById("new-name").value =
+    window.profileAddress.fullName || "";
+
+  document.getElementById("new-address").value =
+    window.profileAddress.street || "";
+
+  document.getElementById("new-city").value =
+    window.profileAddress.city || "";
+
+  document.getElementById("new-state").value =
+    window.profileAddress.state || "";
+
+  document.getElementById("new-pincode").value =
+    window.profileAddress.pincode || "";
+
+  document.getElementById("new-country").value =
+    window.profileAddress.country || "";
+}
+
+
+
+// Save address
+async function saveAddress() {
+
+  const fullName = document.getElementById("new-name").value.trim();
+  const street = document.getElementById("new-address").value.trim();
+  const city = document.getElementById("new-city").value.trim();
+  const state = document.getElementById("new-state").value.trim();
+  const pincode = document.getElementById("new-pincode").value.trim();
+  const country = document.getElementById("new-country").value.trim();
+
+
+  if (!fullName || !street || !city || !state || !pincode || !country) {
+    alert("Please fill all fields");
+    return;
+  }
+
+
+  try {
+
+    const res = await fetch("/api/profile/update-address", {
+
+      method: "PUT",
+
+      headers: { "Content-Type": "application/json" },
+
+      credentials: "include",
+
+      body: JSON.stringify({
+        fullName,
+        street,
+        city,
+        state,
+        pincode,
+        country
+      })
+
+    });
+
+
+    const data = await res.json();
+
+
+    if (!res.ok) {
+      alert(data.message || "Failed to save address");
+      return;
+    }
+
+
+    alert("Address Updated Successfully");
+    location.reload();
+
+
+  } catch (err) {
+
+    console.error(err);
+    alert("Server error");
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>

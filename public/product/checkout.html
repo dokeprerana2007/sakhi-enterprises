@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sakhi Enterprises – Checkout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --green:#2e7d32;
+  --border:#c8e6c9;
+  --light:#e8f5e9;
+  --text:#1b5e20;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Segoe UI, Arial, sans-serif;
+  background:#f4f8f4;
+  color:var(--text);
+}
+header{
+  background:var(--green);
+  color:#fff;
+  padding:16px 24px;
+  font-size:22px;
+  font-weight:700;
+}
+.container{
+  max-width:900px;
+  margin:30px auto;
+}
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:25px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+h2{margin-top:0;color:var(--green);}
+.address-box{
+  background:var(--light);
+  padding:15px;
+  border-radius:8px;
+  margin-bottom:10px;
+  line-height:1.6;
+}
+.summary-item{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:15px;
+  align-items:center;
+  margin-bottom:15px;
+}
+.summary-total{
+  display:flex;
+  justify-content:space-between;
+  font-size:20px;
+  font-weight:800;
+  margin-top:20px;
+}
+.btn{
+  margin-top:20px;
+  padding:14px;
+  width:100%;
+  border:none;
+  border-radius:8px;
+  background:var(--green);
+  color:#fff;
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+}
+.btn:hover{background:#1b5e20;}
+.change-btn{
+  background:#fff;
+  color:var(--green);
+  border:2px solid var(--green);
+  margin-bottom:20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>Sakhi Enterprises – Secure Checkout</header>
+
+<div class="container">
+  <div class="card">
+
+    <h2>Delivery Address</h2>
+    <div id="address-box" class="address-box">
+      Loading address...
+    </div>
+
+    <button class="btn change-btn" onclick="changeAddress()">
+      Change Address
+    </button>
+
+    <hr>
+
+    <button class="btn change-btn" onclick="goToShop()">
+      ➕ Add More Products
+    </button>
+
+    <h2>Order Summary</h2>
+    <div id="summary-items"></div>
+
+    <div class="summary-total">
+      <span>Total</span>
+      <span id="summary-total">₹0</span>
+    </div>
+
+    <button id="payBtn" class="btn">
+      Pay ₹0
+    </button>
+
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+const RAZORPAY_KEY = "rzp_test_S8l9sAf2Mc1cyv";
+const BACKEND = "http://localhost:3000";
+
+let checkoutData = {};
+
+/* ================= LOAD CHECKOUT ================= */
+
+async function loadCheckout() {
+
+
+    // ✅ SINGLE ITEM CHECKOUT FROM CART
+  const params = new URLSearchParams(window.location.search);
+  const itemId = params.get("itemId");
+
+  if (itemId) {
+    try {
+      const res = await fetch(`${BACKEND}/cart/${itemId}`, {
+        credentials: "include"
+      });
+
+      if (!res.ok) {
+        alert("Item not found");
+        return;
+      }
+
+      const item = await res.json();
+
+      checkoutData.items = [item];
+      checkoutData.total = item.price * item.quantity;
+
+      document.getElementById("summary-items").innerHTML = `
+        <div class="summary-item">
+          <div>
+            <strong>${item.name}</strong><br>
+            Qty: ${item.quantity}
+          </div>
+          <strong>₹${item.price * item.quantity}</strong>
+        </div>
+      `;
+
+      document.getElementById("summary-total").textContent =
+        "₹" + checkoutData.total;
+
+      document.getElementById("payBtn").textContent =
+        "Pay ₹" + checkoutData.total;
+
+      await loadAddress();
+      return;   // 🚨 VERY IMPORTANT
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load item");
+      return;
+    }
+  }
+
+  const directOrder = sessionStorage.getItem("directOrder");
+
+  // ✅ FIX START (merge instead of replace)
+  if (directOrder) {
+
+    const item = JSON.parse(directOrder);
+
+    let existingOrders = JSON.parse(sessionStorage.getItem("directOrders")) || [];
+
+    existingOrders.push(item);
+
+    sessionStorage.setItem("directOrders", JSON.stringify(existingOrders));
+    sessionStorage.removeItem("directOrder");
+  }
+
+  const allDirectOrders = JSON.parse(sessionStorage.getItem("directOrders")) || [];
+
+  if (allDirectOrders.length > 0) {
+
+    checkoutData.items = allDirectOrders;
+
+    let total = 0;
+    let html = "";
+
+    allDirectOrders.forEach(item => {
+
+      total += item.price * item.quantity;
+
+      html += `
+        <div class="summary-item">
+          <div>
+            <strong>${item.name}</strong><br>
+            Qty: ${item.quantity}
+          </div>
+          <strong>₹${item.price * item.quantity}</strong>
+        </div>
+      `;
+    });
+
+    checkoutData.total = total;
+
+    document.getElementById("summary-items").innerHTML = html;
+    document.getElementById("summary-total").textContent = "₹" + total;
+    document.getElementById("payBtn").textContent = "Pay ₹" + total;
+
+    await loadAddress();
+    return;
+  }
+  // ✅ FIX END
+
+
+  // ================= CART (UNCHANGED) =================
+
+  try {
+
+    const res = await fetch(`${BACKEND}/cart`, {
+  credentials: "include"
+});
+    if (!res.ok) {
+      alert("Please login again");
+      return;
+    }
+
+    const data = await res.json();
+
+    checkoutData = data;
+
+    let html = "";
+    let total = 0;
+
+    if (!data || data.length === 0) {
+
+      html = "<p>Your cart is empty.</p>";
+
+    } else {
+
+      data.forEach(item => {
+
+        total += item.price * item.quantity;
+
+        html += `
+          <div class="summary-item">
+            <div>
+             <strong>${item.name}</strong>
+              Qty: ${item.quantity}
+            </div>
+            <strong>₹${item.price * item.quantity}</strong>
+          </div>
+        `;
+      });
+    }
+
+    document.getElementById("summary-items").innerHTML = html;
+    document.getElementById("summary-total").textContent = "₹" + total;
+    document.getElementById("payBtn").textContent = "Pay ₹" + total;
+
+    checkoutData.total = total;
+    checkoutData.items = data;
+
+await loadAddress();
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load checkout");
+  }
+}
+
+/* ================= LOAD ADDRESS ================= */
+
+async function loadAddress() {
+  const res = await fetch(`${BACKEND}/api/profile/profiledata`, {
+    credentials: "include"
+  });
+  const data = await res.json();
+  checkoutData.address = data.address;
+  renderAddress(data);
+}
+
+function renderAddress(data){
+
+  if (!data.address) {
+    document.getElementById("address-box").innerHTML = `
+      <strong>No address found</strong><br>
+      Please add address in profile
+    `;
+  } else {
+
+    const addr = data.address;
+
+    document.getElementById("address-box").innerHTML = `
+      <strong>${data.username}</strong><br>
+      ${addr.fullName}<br>
+      ${addr.street}, ${addr.city}<br>
+      ${addr.state} - ${addr.pincode}<br>
+      ${addr.country}<br>
+      Phone: ${data.phone}
+    `;
+  }
+}
+
+loadCheckout();
+
+/* ================= PAYMENT (UNCHANGED) ================= */
+
+document.getElementById("payBtn").addEventListener("click", async () => {
+
+  if (!checkoutData.total || checkoutData.total <= 0) {
+    alert("Cart is empty");
+    return;
+  }
+
+  if (!checkoutData.address) {
+    alert("Please add delivery address first");
+    window.location.href = "/profile.html";
+    return;
+  }
+
+  try {
+
+    const orderRes = await fetch(`${BACKEND}/api/payment/create-order`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
+      },
+      body: JSON.stringify({
+        amount: checkoutData.total
+      })
+    });
+
+    const order = await orderRes.json();
+
+    if (!order.id) {
+      alert("Order creation failed");
+      return;
+    }
+
+    const options = {
+      key: RAZORPAY_KEY,
+      amount: order.amount,
+      currency: "INR",
+      name: "Sakhi Enterprises",
+      description: "Order Payment",
+      order_id: order.id,
+
+      handler: async function (response) {
+
+        try {
+
+          await fetch(`${BACKEND}/api/payment/verify`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token")
+            },
+            body: JSON.stringify({
+              ...response,
+              amount: checkoutData.total
+            })
+          });
+
+         await fetch(`${BACKEND}/order/place`, {
+  method: "POST",
+  credentials: "include",   // ⭐ THIS IS THE FIX
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    items: checkoutData.items,
+    address: checkoutData.address
+  })
+});
+
+          // Smart cart handling (safe for both direct & full cart checkout)
+
+if (sessionStorage.getItem("directOrders")) {
+
+  for (let item of checkoutData.items) {
+
+    if (item._id) {
+      await fetch(`${BACKEND}/cart/remove/${item._id}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+    }
+
+  }
+
+} else {
+
+ // Remove only ordered items from cart
+for (let item of checkoutData.items) {
+
+  if (item._id) {
+    await fetch(`${BACKEND}/cart/remove/${item._id}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
+  }
+
+}
+}
+          sessionStorage.removeItem("directOrders");
+
+          alert("Order Placed Successfully!");
+          window.location.href = "success.html";
+
+        } catch (err) {
+          console.error(err);
+          alert("Something went wrong");
+        }
+
+      },
+
+      theme: { color: "#2e7d32" }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+
+  } catch (err) {
+    console.error(err);
+    alert("Payment failed. Try again.");
+  }
+
+});
+
+/* ================= NAV ================= */
+
+function changeAddress() {
+  window.location.href = "/profile.html";
+}
+
+function goToShop() {
+  window.location.href = "product.html";
+}
+
+</script>
+
+</body>
+</html>

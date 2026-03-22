@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sakhi Enterprises | About Us</title>
+    <link rel="stylesheet" href="assets/styles/about.css" />
+    <link rel="stylesheet" href="assets/styles/styleH.css" />
+    <script defer src="assets/js/about.js"></script>
+    <script defer src="assets/js/scriptH.js"></script>
+</head>
+<body>
+ <header>
+    <!-- HERO BANNER -->
+    <div class="hero">
+        <div class="hero-content">
+  <a href="index.html" class="back-btn">← Back to Home</a>
+
+            <h1>ABOUT US</h1>
+            <p>Delivering Quality Packing Solutions.</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- ABOUT SECTION -->
+    <section class="about-section">
+        <div class="container">
+            <h2>About <span>Sakhi Enterprises</span></h2>
+    <div style="text-align: justify; font-size: 16px; line-height: 1.6;">
+  <p>
+    Sakhi Enterprises is a trusted provider of high-quality packing materials designed to support modern business requirements. 
+    With a strong commitment to durability, protection, and efficient handling, we supply a wide range of corrugated boxes, 
+    packaging products, and customized solutions. Our materials are engineered to safeguard goods during transport, storage, 
+    and distribution, ensuring reliability at every stage. By combining industry expertise with advanced manufacturing practices, 
+    we deliver packaging that is strong, lightweight, and eco-friendly. Over the years, we have earned a reputation for 
+    consistent quality, timely service, and customer-first support.
+  </p>
+
+  <p>
+    At Sakhi Enterprises, we understand that every product requires the right kind of packaging, which is why we offer tailored 
+    designs, size options, and branding customization to meet specific business needs. Our clients include wholesalers, retailers, 
+    manufacturers, and distributors who depend on us for dependable and cost-effective packing solutions. With a focus on 
+    innovation and long-term trust, we continuously expand our capabilities to meet evolving market expectations. Our mission is 
+    to provide packaging that not only protects your products but also strengthens your brand and enhances the overall efficiency 
+    of your supply chain.
+  </p>
+</div>
+<br>
+            <div class="about-img">
+                <img src="assets/images/aboutimage.png" alt="Packaging" />
+            </div>
+        </div>
+    </section>
+
+    <!-- VISION & MISSION -->
+    <section class="vm-section">
+        <div class="container vm-grid">
+            <div class="vm-card">
+                <h3>Our Vision</h3>
+                <p>
+                    To become India’s most reliable and innovative packaging materials
+                    supplier by offering eco-friendly and sustainable packing solutions
+                    for industries across the nation.
+                </p>
+            </div>
+
+            <div class="vm-card">
+                <h3>Our Mission</h3>
+                <p>
+                    To deliver durable, high-quality packaging products with consistent
+                    workmanship while maintaining long-term relationships with clients
+                    based on trust and excellence.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HIGHLIGHTS -->
+    <section class="highlights-section">
+        <div class="container highlight-grid">
+            <div class="h-card">
+                <h3>Nature of Business</h3>
+                <p>Manufacturing & Supply</p>
+            </div>
+
+            <div class="h-card">
+                <h3>Years of Experience</h3>
+                <p>More than 5+ Years</p>
+            </div>
+
+            <div class="h-card">
+                <h3>Employees</h3>
+                <p>25+ Skilled Workers</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA BANNER -->
+    <section class="cta">
+        <h2>Looking for Reliable Packing Solutions?</h2>
+        <p>Contact us today and get premium packing material at the best price.</p>
+        <a href="contact.html" class="cta-btn">Contact Us</a>
+    </section>
+ <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-brand">
+    <div class="footer-bottom">
+      <div class="container">  
+        <small>© <span id="year"></span>Sakhi Enterprises. All rights reserved.</small>
+        <small><a href="#">Terms</a> · <a href="#">Privacy</a></small>
+      </div>
+    </div>
+  </footer>
+  <script>
+  function toggleDropdown() {
+    const menu = document.getElementById("dropdownMenu");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+  }
+
+  window.addEventListener("click", function (e) {
+    if (!e.target.closest(".profile-dropdown")) {
+      document.getElementById("dropdownMenu").style.display = "none";
+    }
+  });
+</script>
+</body>
+</html>

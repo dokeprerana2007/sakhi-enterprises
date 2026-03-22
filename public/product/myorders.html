@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders</title>
+
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f1f3f6;padding-top:80px}
+header{position:fixed;top:0;left:0;right:0;height:70px;background:#1b5e20;color:#fff;
+display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:999}
+header button{background:#4caf50;border:none;color:#fff;padding:10px 18px;border-radius:8px;font-weight:700}
+
+.container{max-width:1000px;margin:auto;padding:20px}
+
+.order-card{background:#fff;border-radius:14px;padding:16px;margin-bottom:20px;
+box-shadow:0 2px 5px rgba(0,0,0,.05);border-left:5px solid #1b5e20}
+
+.order-header{display:flex;justify-content:space-between;font-weight:800;margin-bottom:10px}
+
+.item{display:flex;gap:16px;padding-top:14px;margin-top:14px;align-items:center;border-top:1px solid #eee}
+.item img{width:100px;height:100px;border-radius:12px;border:1px solid #ddd}
+
+.track-btn{background:#4caf50;border:none;color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
+
+.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:800;margin-bottom:6px}
+.badge.cancelled{background:#fdecea;color:#d32f2f}
+.badge.returned{background:#fff3e0;color:#fb641b}
+.badge.delivered{background:#e8f5e9;color:#1b5e20}
+.badge.active{background:#e3f2fd;color:#1976d2}
+
+.timestamp-label{color:#1b5e20;font-size:13px;font-weight:800}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div>🛒 My Orders</div>
+  <button onclick="location.href='product.html'">Shop More</button>
+</header>
+
+<div class="container" id="orders-list"></div>
+
+<script>
+
+async function getOrders() {
+  try {
+    const res = await fetch("/my-orders", {
+      method: "GET",
+      credentials: "include"
+    });
+
+    if (res.status === 401) {
+      window.location.href = "/login.html";
+      return [];
+    }
+
+    if (!res.ok) {
+      console.error("Failed to fetch orders");
+      return [];
+    }
+
+    return await res.json();
+
+  } catch (err) {
+    console.error("Error fetching orders:", err);
+    return [];
+  }
+}
+
+
+function getStatusBadge(item) {
+  if (item.status === "CANCELLED")
+    return `<span class="badge cancelled">CANCELLED</span>`;
+
+  if (item.returnRequested)
+    return `<span class="badge returned">RETURNED</span>`;
+
+  if (item.status === "DELIVERED")
+    return `<span class="badge delivered">DELIVERED</span>`;
+
+  return `<span class="badge active">${(item.status || "CONFIRMED").replace(/_/g, " ")}</span>`;
+}
+
+
+function formatDate(ts) {
+  return new Date(ts).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+}
+
+
+async function renderOrders() {
+
+  const orders = await getOrders();
+  const container = document.getElementById("orders-list");
+
+  if (!orders || !orders.length) {
+    container.innerHTML =
+      "<div class='order-card'>No orders found</div>";
+    return;
+  }
+
+  let items = [];
+
+  orders.forEach(order => {
+
+    if (!order.items || !Array.isArray(order.items)) return;
+
+    order.items.forEach(item => {
+
+      const itemDate = item.orderDate || order.createdAt;
+
+      items.push({
+        ...item,
+        orderId: order._id,
+        sortDate: new Date(itemDate).getTime()
+      });
+
+    });
+
+  });
+
+  // Sort latest first
+  items.sort((a, b) => b.sortDate - a.sortDate);
+
+  container.innerHTML = items.map(item => `
+    <div class="order-card">
+
+      <div class="order-header">
+        <div>Order ID: #${item.orderId}</div>
+        <div class="timestamp-label">${formatDate(item.sortDate)}</div>
+      </div>
+
+      <div class="item">
+        <img src="${item.image || 'https://via.placeholder.com/100'}">
+
+        <div style="flex:1">
+          ${getStatusBadge(item)}
+          <div style="font-weight:800;margin-top:4px">
+            ${item.name || "Product"}
+          </div>
+          <div style="color:#555">
+            Qty: ${item.quantity || 1} | ₹${item.totalPrice || 0}
+          </div>
+        </div>
+
+        <button class="track-btn"
+          onclick="goToTrack('${item.orderId}')">
+          Track
+        </button>
+
+      </div>
+    </div>
+  `).join("");
+}
+
+
+function goToTrack(orderId) {
+  // Use URL parameter instead of localStorage
+  window.location.href = `ordertrack.html?orderId=${orderId}`;
+}
+
+
+// Load orders
+renderOrders();
+
+
+// Profile auth check
+fetch("/profiledata", {
+  method: "GET",
+  credentials: "include"
+}).then(res => {
+  if (res.status !== 200) {
+    window.location.href = "/login.html";
+  }
+});
+
+</script>
+
+</body>
+</html>

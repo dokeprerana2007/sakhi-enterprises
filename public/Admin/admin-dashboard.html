@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Dashboard - Sakhi Enterprises</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="app">
+    <div class="sidebar">
+      <h2>Sakhi Admin</h2>
+      <ul class="nav">
+        <li><a href="admin-dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="admin-products.html">Products</a></li>
+        <li><a href="admin-orders.html">Orders</a></li>
+        <li><a href="admin-users.html">Users</a></li>
+        <li><a href="admin-settings.html">Settings</a></li>
+        <li><a href="#" onclick="logout()">Logout</a></li>
+      </ul>
+    </div>
+    <div class="main">
+      <div class="top"><h3>Dashboard</h3><div></div></div>
+      <div class="card-row">
+        <div class="card"><h4>Total Users</h4><div id="usersCount">—</div></div>
+        <div class="card"><h4>Total Orders</h4><div id="ordersCount">—</div></div>
+        <div class="card"><h4>Total Products</h4><div id="productsCount">—</div></div>
+        <div class="card"><h4>Total Revenue</h4><div id="revenue">—</div></div>
+      </div>
+      <div>
+        <h4>Recent Orders</h4>
+        <div id="recentOrders">Loading...</div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { requireAuth, logout, fetchDashboard, fetchOrders } from './admin.js';
+    requireAuth();
+    window.logout = logout;
+    async function load(){
+      try {
+        const d = await fetchDashboard();
+        document.getElementById('usersCount').textContent = d.usersCount ?? 0;
+        document.getElementById('ordersCount').textContent = d.ordersCount ?? 0;
+        document.getElementById('productsCount').textContent = d.productsCount ?? 0;
+        document.getElementById('revenue').textContent = '₹' + (d.revenue ?? 0);
+      } catch (err) {
+        console.error('Error loading dashboard:', err);
+        document.getElementById('usersCount').textContent = 'Error';
+        document.getElementById('ordersCount').textContent = 'Error';
+        document.getElementById('productsCount').textContent = 'Error';
+        document.getElementById('revenue').textContent = 'Error';
+      }
+      
+      try {
+        const orders = await fetchOrders();
+        const oEl = document.getElementById('recentOrders');
+        if(!orders || orders.length===0) oEl.textContent='No orders yet';
+        else{
+          oEl.innerHTML = '<table><tr><th>Order</th><th>User</th><th>Total</th><th>Status</th></tr>' +
+            orders.slice(0,6).map(o=>`<tr><td>${o._id}</td><td>${o.userDisplay || o.user?.username || o.user?.email || '—'}</td><td>₹${o.totalAmount||0}</td><td>${o.status||'—'}</td></tr>`).join('') + '</table>';
+        }
+      } catch (err) {
+        console.error('Error loading orders:', err);
+        document.getElementById('recentOrders').textContent = 'Error loading orders: ' + err.message;
+      }
+    }
+    load();
+  </script>
+</body>
+</html>

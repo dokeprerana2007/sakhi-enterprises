@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Manage Orders - Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="app">
+    <div class="sidebar">
+      <h2>Sakhi Admin</h2>
+      <ul class="nav">
+        <li><a href="admin-dashboard.html">Dashboard</a></li>
+        <li><a href="admin-products.html">Products</a></li>
+        <li><a href="admin-orders.html" class="active">Orders</a></li>
+        <li><a href="admin-users.html">Users</a></li>
+        <li><a href="admin-settings.html">Settings</a></li>
+        <li><a href="#" onclick="logout()">Logout</a></li>
+      </ul>
+    </div>
+    <div class="main">
+      <div class="top"><h3>Orders</h3></div>
+      <div id="list">Loading orders...</div>
+    </div>
+  </div>
+  <script type="module">
+    import { requireAuth, logout, fetchOrders, updateOrderStatus } from './admin.js';
+    requireAuth(); window.logout = logout;
+    function render(orders){
+      if(!orders || orders.length===0) return document.getElementById('list').textContent='No orders';
+      const html = ['<table><tr><th>ID</th><th>User</th><th>Total</th><th>Status</th><th></th></tr>'];
+      for(const o of orders){
+        html.push(`<tr><td>${o._id}</td><td>${o.user?.username||o.user?.email||'—'}</td><td>₹${o.totalAmount||0}</td><td>${o.status||''}</td><td><select onchange="onStatus('${o._id}',this.value)"><option>Pending</option><option>Processing</option><option>Shipped</option><option>Out for Delivery</option><option>Delivered</option></select></td></tr>`);
+      }
+      html.push('</table>'); document.getElementById('list').innerHTML = html.join('');
+    }
+    window.onStatus = async (id,status)=>{ await updateOrderStatus(id,status); load(); }
+    async function load(){ const o = await fetchOrders(); render(o); }
+    load();
+  </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sign Up - Sakhi Enterprises</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e9f7ee; /* Light green background */
+        }
+
+        .background-overlay {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            background-color: #ffffff; /* White card */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            width: 330px;
+            text-align: center;
+            border-top: 4px solid #1b8f3a; /* Green top border */
+        }
+
+        .company-logo {
+            width: 100px;
+            margin-bottom: 10px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #1b8f3a; /* Green outline */
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #1b8f3a; /* Green button */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0b6b32; /* Darker green */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-overlay">
+        <div class="login-box">
+
+            <img src="/assets/images/logo.png" class="company-logo" alt="Sakhi Enterprises Logo">
+
+            <form action="/signup" method="POST">
+                
+                <input type="text" name="username" placeholder="Username" required>
+
+                <input type="email" name="email" placeholder="Email" required>
+
+                <input type="password" name="password" placeholder="Password" required>
+
+                <input type="tel" name="phone" placeholder="Phone Number" required>
+
+                <input type="text" name="address" placeholder="Address" required>
+
+                <select name="visit_reason" required>
+                    <option value="">Why are you visiting this site? 👇</option>
+                    <option value="ordering">For Ordering</option>
+                    <option value="viewing">For Viewing</option>
+                    <option value="contacting">For Contacting</option>
+                    <option value="other">Other</option>
+                </select> 
+                 <button type="submit" name="signup">signup</button>
+
+
+
+            </form>
+
+        </div>
+    </div>
+</body>
+</html>

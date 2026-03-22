@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your Cart – Sakhi Enterprises</title>
+
+<style>
+body{
+  margin:0;
+  padding:90px 0 40px;
+  font-family:Arial;
+  background:#e8ffef;
+}
+
+.site-header{
+  position:fixed;
+  top:0; left:0; right:0;
+  background:#1B5E20;
+  color:#fff;
+  padding:16px 20px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+
+.header-btn{
+  background:#4CAF50;
+  padding:10px 16px;
+  border-radius:10px;
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  border:none;
+}
+
+.wrap{
+  max-width:1100px;
+  margin:0 auto;
+  padding:0 20px;
+}
+
+.cart-item{
+  background:#fff;
+  padding:16px;
+  border-radius:12px;
+  margin-bottom:14px;
+  display:flex;
+  gap:16px;
+  border:1px solid rgba(0,0,0,0.1);
+}
+
+.cart-thumb{
+  width:120px; height:120px;
+}
+
+.cart-thumb img{
+  width:100%; height:100%; object-fit:cover;
+}
+
+.cart-info{flex:1;}
+
+.qty-box{
+  display:flex;
+  align-items:center;
+  margin-top:10px;
+}
+
+.qty-box button{
+  padding:6px 10px;
+  background:#1B5E20;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.qty-box input{
+  width:60px;
+  text-align:center;
+  margin:0 6px;
+  padding:6px;
+}
+
+.action-btn{
+  padding:8px 12px;
+  border-radius:6px;
+  color:#fff;
+  cursor:pointer;
+  border:none;
+  font-weight:600;
+}
+
+.remove-btn{ background:red; }
+
+.checkout-btn{
+  background:#4CAF50;
+  width:100%;
+  margin-top:15px;
+  padding:12px;
+  font-size:1rem;
+}
+
+.total-box{
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  margin-top:20px;
+  font-size:1.3rem;
+  font-weight:800;
+  text-align:right;
+}
+
+.cart-empty{
+  text-align:center;
+  padding:50px;
+  font-size:1.3rem;
+}
+/* ✅ Compact Cart Buttons */
+.item-actions{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+  justify-content:flex-start; /* align left */
+}
+
+.item-actions button{
+  flex:0 0 auto;     /* stop stretching */
+  min-width:90px;    /* control size */
+  height:38px;
+  padding:6px 12px;
+  margin:0 !important;
+  width:auto !important;
+  font-size:0.9rem;
+}
+</style>
+</head>
+
+<body>
+
+<header class="site-header">
+  <div style="font-size:1.3rem;font-weight:800;">🛒 Your Cart</div>
+  <button onclick="window.location.href='product.html'" class="header-btn">
+    ← Back to Products
+  </button>
+</header>
+
+<div class="wrap">
+  <div id="cart-list"></div>
+  <div id="cart-total" class="total-box" style="display:none"></div>
+  <div id="checkout-section"></div>
+</div>
+
+<script>
+const list = document.getElementById("cart-list");
+const totalBox = document.getElementById("cart-total");
+const checkoutSection = document.getElementById("checkout-section");
+
+let cart = [];
+
+/* 🔐 CHECK LOGIN */
+async function checkLogin(){
+  const res = await fetch("/profiledata",{credentials:"include"});
+  if(!res.ok){
+    window.location.href="/login.html";
+  }
+}
+
+/* 🛒 LOAD CART */
+async function loadCart(){
+  const res = await fetch("/cart",{credentials:"include"});
+
+  if(!res.ok){
+    list.innerHTML = `<div class="cart-empty">Please login to view cart.</div>`;
+    return;
+  }
+
+  cart = await res.json();
+  renderCart();
+}
+
+/* 🎨 RENDER CART */
+function renderCart(){
+  list.innerHTML = "";
+  checkoutSection.innerHTML = "";
+
+  if(!cart.length){
+    list.innerHTML = `<div class="cart-empty">Your cart is empty.</div>`;
+    totalBox.style.display="none";
+    return;
+  }
+
+  let grandTotal = 0;
+
+  cart.forEach(item=>{
+    const price = Number(item.price);
+    const quantity = Number(item.quantity);
+    const itemTotal = price * quantity;
+
+    grandTotal += itemTotal;
+
+    const div = document.createElement("div");
+    div.className="cart-item";
+
+    div.innerHTML=`
+      <div class="cart-thumb">
+        <img src="${item.image || 'https://via.placeholder.com/120'}">
+      </div>
+
+      <div class="cart-info">
+        <div style="font-weight:700;font-size:1.1rem">${item.name}</div>
+
+        <div class="qty-box">
+          <button onclick="updateQty('${item._id}', ${quantity-1})">−</button>
+          <input type="number" value="${quantity}" min="1"
+            onchange="updateQty('${item._id}', this.value)">
+          <button onclick="updateQty('${item._id}', ${quantity+1})">+</button>
+        </div>
+
+        <div style="margin-top:8px;font-weight:700">
+          Item Total: ₹ ${itemTotal.toLocaleString("en-IN")}
+        </div>
+
+        <!-- ✅ Updated Buttons -->
+     <div class="item-actions">
+  <button class="action-btn remove-btn"
+    onclick="removeItem('${item._id}')">
+    Remove
+  </button>
+
+  <button class="action-btn checkout-btn single-btn"
+    onclick="orderSingle('${item._id}')">
+    Order Now
+  </button>
+</div>
+    `;
+
+    list.appendChild(div);
+  });
+
+  totalBox.style.display="block";
+  totalBox.innerHTML=`Grand Total: ₹ ${grandTotal.toLocaleString("en-IN")}`;
+
+  /* ✅ Single Checkout Button Below Total */
+  checkoutSection.innerHTML = `
+    <button class="action-btn checkout-btn"
+      onclick="window.location.href='checkout.html'">
+      Proceed to Checkout
+    </button>
+  `;
+}
+/* ➕ UPDATE QUANTITY */
+async function updateQty(id,qty){
+  qty=parseInt(qty);
+  if(isNaN(qty)||qty<1) qty=1;
+
+  await fetch(`/cart/update/${id}`,{
+    method:"PUT",
+    headers:{ "Content-Type":"application/json" },
+    credentials:"include",
+    body:JSON.stringify({quantity:qty})
+  });
+
+  await loadCart();
+}
+
+/* ❌ REMOVE ITEM */
+async function removeItem(id) {
+  const res = await fetch(`/cart/remove/${id}`, {
+    method: "DELETE",
+    credentials: "include"
+  });
+
+  if (!res.ok) {
+    alert("Failed to remove item");
+    return;
+  }
+
+  cart = cart.filter(item => item._id !== id);
+  renderCart();
+}
+function orderSingle(id){
+  window.location.href = `checkout.html?itemId=${id}`;
+}
+/* 🚀 INIT */
+checkLogin();
+loadCart();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,172 @@
+/* GLOBAL */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    background: #ffffff;
+    color: #222;
+    line-height: 1.7;
+}
+
+.container {
+    width: 90%;
+    max-width: 1150px;
+    margin: auto;
+}
+
+/* HERO SECTION */
+.back-btn {
+  background:#0a8a3b49;
+  color:#fff;
+  padding:10px 20px;
+  border-radius:8px;
+  text-decoration:none;
+  font-size:16px;
+  font-weight:600;
+  display:inline-block;
+  transition:0.3s;
+}
+
+.back-btn:hover {
+  background:#066c2c;
+  transform:scale(1.05);
+}
+
+.hero {
+ background: url("../images/bgimage.png") center / cover no-repeat;
+
+    height: 55vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(19, 87, 32, 0.6);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    color: #fff;
+}
+
+.hero h1 {
+    font-size: 55px;
+    letter-spacing: 2px;
+}
+
+.hero p {
+    margin-top: 10px;
+    font-size: 18px;
+}
+.hero-content, .hero-content * {
+    color: #ffffff !important;
+}
+/* ABOUT SECTION */
+
+.about-section {
+    padding: 60px 0;
+}
+
+.about-section h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.about-section span {
+    color: #135720;
+    font-weight: 700;
+}
+
+.about-img img {
+    width: 100%;
+    margin-top: 25px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* VISION & MISSION */
+.vm-section {
+    background: #f2fff2;
+    padding: 60px 0;
+}
+
+.vm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.vm-card {
+    padding: 25px;
+    border-radius: 10px;
+    background: #ffffff;
+    border-left: 5px solid #135720;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.vm-card h3 {
+    margin-bottom: 10px;
+    color: #135720;
+}
+
+
+/* HIGHLIGHTS */
+.highlights-section {
+    background: #135720;
+    color: white;
+    padding: 60px 0;
+}
+
+.highlight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 25px;
+}
+
+.h-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+}
+.highlights-section, .highlights-section *{
+    color: aliceblue !important;
+}
+/* CTA */
+.cta {
+    text-align: center;
+    padding: 70px 20px;
+    background: #f1fff3;
+}
+
+.cta h2 {
+    margin-bottom: 10px;
+    color: #135720;
+}
+
+.cta-btn {
+    display: inline-block;
+    margin-top: 20px;
+    background: #135720;
+    color: white;
+    padding: 12px 28px;
+    font-size: 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.cta-btn:hover {
+    background: #0f4a19;
+}

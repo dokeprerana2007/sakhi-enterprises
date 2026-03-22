@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Manage Users - Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="app">
+    <div class="sidebar">
+      <h2>Sakhi Admin</h2>
+      <ul class="nav">
+        <li><a href="admin-dashboard.html">Dashboard</a></li>
+        <li><a href="admin-products.html">Products</a></li>
+        <li><a href="admin-orders.html">Orders</a></li>
+        <li><a href="admin-users.html" class="active">Users</a></li>
+        <li><a href="admin-settings.html">Settings</a></li>
+        <li><a href="#" onclick="logout()">Logout</a></li>
+      </ul>
+    </div>
+    <div class="main">
+      <div class="top"><h3>Users</h3></div>
+      <div id="list">Loading users...</div>
+    </div>
+  </div>
+  <script type="module">
+    import { requireAuth, logout, fetchUsers, deleteUser } from './admin.js';
+    requireAuth(); window.logout = logout;
+    function render(users){
+      if(!users || users.length===0) return document.getElementById('list').textContent='No users';
+      const html=['<table><tr><th>Name</th><th>Email</th><th></th></tr>'];
+      for(const u of users) html.push(`<tr><td>${u.username||u.name||'-'}</td><td>${u.email}</td><td><button class="btn secondary" onclick="onDel('${u._id}')">Delete</button></td></tr>`);
+      html.push('</table>'); document.getElementById('list').innerHTML = html.join('');
+    }
+    window.onDel = async (id)=>{ 
+      if(!confirm('Delete user?')) return; 
+      try {
+        await deleteUser(id); 
+        load(); 
+      } catch (err) {
+        console.error('Error deleting user:', err);
+        alert('Error deleting user: ' + err.message);
+      }
+    }
+    async function load(){ 
+      try {
+        const u = await fetchUsers(); 
+        render(u); 
+      } catch (err) {
+        console.error('Error loading users:', err);
+        document.getElementById('list').textContent = 'Error loading users: ' + err.message;
+      }
+    }
+    load();
+  </script>
+</body>
+</html>

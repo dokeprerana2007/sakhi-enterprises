@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login - Sakhi Enterprises</title>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e9f7ee;
+    }
+
+    .login-box {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      width: 330px;
+      text-align: center;
+      border-top: 4px solid #1b8f3a;
+    }
+
+    .company-logo {
+      width: 100px;
+      margin-bottom: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #1b8f3a;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #1b8f3a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    button:hover {
+      background-color: #0b6b32;
+    }
+
+    .signup-text {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #0b6b32;
+    }
+
+    .signup-text a {
+      color: #0b6b32;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .signup-text a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-box">
+
+    <img src="/assets/images/logo.png" class="company-logo" alt="Sakhi Enterprises Logo">
+
+    <!-- FORM SUBMITS TO BACKEND -->
+    <form action="/login" method="POST">
+
+       <input type="text" name="username" placeholder="Username" required>
+      <input type="email" name="email" placeholder="Email Address" required />
+
+      <input type="password" name="password" placeholder="Password" required />
+
+      <!-- ✅ SUBMIT BUTTON -->
+      <button type="submit">Login</button>
+
+      <p class="signup-text">
+        <a href="forgot.html">Forgot Password?</a> |
+        <a href="signup.html">Create Account</a>
+      </p>
+
+    </form>
+  </div>
+</body>
+</html>

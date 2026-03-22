@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Settings - Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="app">
+    <div class="sidebar">
+      <h2>Sakhi Admin</h2>
+      <ul class="nav">
+        <li><a href="admin-dashboard.html">Dashboard</a></li>
+        <li><a href="admin-products.html">Products</a></li>
+        <li><a href="admin-orders.html">Orders</a></li>
+        <li><a href="admin-users.html">Users</a></li>
+        <li><a href="admin-settings.html" class="active">Settings</a></li>
+        <li><a href="#" onclick="logout()">Logout</a></li>
+      </ul>
+    </div>
+    <div class="main">
+      <div class="top"><h3>Settings</h3></div>
+      <div class="card">
+        <h4>Theme</h4>
+        <div class="form-row">
+          <label class="small">Primary color</label>
+          <input type="color" id="primaryColor">
+          <label class="small">Sidebar color</label>
+          <input type="color" id="sidebarColor">
+          <button class="btn" id="saveTheme">Save Theme</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h4>Admin Account</h4>
+        <form id="pwdForm" class="form-row">
+          <input id="oldpwd" type="password" placeholder="Current password" required>
+          <input id="newpwd" type="password" placeholder="New password" required>
+          <button class="btn" type="submit">Change Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { requireAuth, logout } from './admin.js';
+    requireAuth(); window.logout = logout;
+
+    const primary = document.getElementById('primaryColor');
+    const sidebar = document.getElementById('sidebarColor');
+    const save = document.getElementById('saveTheme');
+
+    // Theme functionality - simplified
+    function applyLocalTheme(){
+      const p = localStorage.getItem('admin_theme_primary');
+      const s = localStorage.getItem('admin_theme_sidebar');
+      if(p) document.documentElement.style.setProperty('--accent', p);
+      if(s) document.documentElement.style.setProperty('--sidebar', s);
+      if(p) primary.value = p; if(s) sidebar.value = s;
+    }
+    applyLocalTheme();
+
+    save.addEventListener('click', ()=>{
+      const p = primary.value; const s = sidebar.value;
+      localStorage.setItem('admin_theme_primary', p); localStorage.setItem('admin_theme_sidebar', s);
+      applyLocalTheme();
+      alert('Theme saved');
+    });
+
+    document.getElementById('pwdForm').addEventListener('submit', async e=>{
+      e.preventDefault();
+      const oldpwd = document.getElementById('oldpwd').value;
+      const newpwd = document.getElementById('newpwd').value;
+      try{
+        const res = await fetch('/api/admin/change-password',{ method:'PUT', headers:{'Content-Type':'application/json', Authorization: 'Bearer '+localStorage.getItem('adminToken')}, body: JSON.stringify({ oldPassword: oldpwd, newPassword: newpwd }) });
+        const j = await res.json();
+        if(res.ok) alert('Password changed'); else alert(j.message||'Failed');
+      }catch(err){ alert('Error: '+err.message); }
+    });
+  </script>
+</body>
+</html>

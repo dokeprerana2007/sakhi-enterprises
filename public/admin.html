@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sakhi Enterprises - Admin Dashboard</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* ================= RESET ================= */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Segoe UI,sans-serif;
+}
+
+body{
+  background:#f4f6f9;
+}
+
+/* ================= TOP BAR ================= */
+
+.topbar{
+  height:60px;
+  background:#0b6b33;
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 25px;
+}
+
+.topbar h2{
+  font-weight:600;
+}
+
+.topbar i{
+  margin-right:10px;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+  width:230px;
+  background:#064020;
+  position:fixed;
+  top:60px;
+  bottom:0;
+  left:0;
+  padding-top:20px;
+}
+
+.sidebar a{
+  display:block;
+  color:white;
+  padding:14px 22px;
+  text-decoration:none;
+  font-size:15px;
+  cursor:pointer;
+}
+
+.sidebar a i{
+  margin-right:8px;
+}
+
+.sidebar a:hover{
+  background:#0b6b33;
+}
+
+/* ================= MAIN ================= */
+
+main{
+  margin-left:230px;
+  margin-top:60px;
+  padding:25px;
+}
+
+/* ================= CARDS ================= */
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  margin-top:20px;
+}
+
+.card{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+.card h3{
+  color:#0b6b33;
+  margin-bottom:10px;
+}
+
+.card p{
+  font-size:22px;
+  font-weight:bold;
+}
+
+/* ================= TABLE ================= */
+
+table{
+  width:100%;
+  background:white;
+  margin-top:20px;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:12px;
+  border:1px solid #ddd;
+  text-align:center;
+}
+
+th{
+  background:#0b6b33;
+  color:white;
+}
+
+/* ================= FORM ================= */
+
+.form-box{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  margin-top:20px;
+}
+
+.form-box h3{
+  color:#0b6b33;
+  margin-bottom:10px;
+}
+
+.form-box input,select{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border:1px solid #ccc;
+  border-radius:4px;
+}
+
+/* ================= BUTTON ================= */
+
+.btn{
+  background:#0b6b33;
+  color:white;
+  padding:7px 14px;
+  border:none;
+  cursor:pointer;
+  border-radius:4px;
+}
+
+.btn-red{
+  background:#e53935;
+}
+
+.btn-blue{
+  background:#1976d2;
+}
+
+/* ================= STATUS ================= */
+
+.status{
+  padding:5px 10px;
+  border-radius:20px;
+  color:white;
+  font-size:13px;
+}
+
+.pending{background:orange;}
+.shipped{background:blue;}
+.delivered{background:green;}
+.cancelled{background:red;}
+
+</style>
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+
+<div class="topbar">
+
+  <h2>📦 Sakhi Enterprises Admin</h2>
+
+  <div>
+    <i class="fa fa-bell"></i>
+    <i class="fa fa-user"></i> Admin
+  </div>
+
+</div>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar">
+
+  <a onclick="showDashboard()"><i class="fa fa-home"></i> Dashboard</a>
+
+  <a onclick="showProducts()"><i class="fa fa-box"></i> Products</a>
+
+  <a onclick="showOrders()"><i class="fa fa-shopping-cart"></i> Orders</a>
+
+  <a onclick="showCustomers()"><i class="fa fa-users"></i> Customers</a>
+
+  <a onclick="showInventory()"><i class="fa fa-warehouse"></i> Inventory</a>
+
+  <a onclick="showReports()"><i class="fa fa-chart-line"></i> Reports</a>
+
+  <a onclick="showSettings()"><i class="fa fa-cog"></i> Settings</a>
+
+</div>
+
+
+<!-- ================= MAIN ================= -->
+
+<main id="main"></main>
+
+
+<!-- ================= SCRIPT ================= -->
+
+<script>
+
+/* LOAD DASHBOARD FIRST */
+showDashboard();
+
+
+/* ================= DASHBOARD ================= */
+
+function showDashboard(){
+
+document.getElementById("main").innerHTML=`
+
+<h2>📊 Smart Dashboard</h2>
+
+<div class="cards">
+
+  <div class="card">
+    <h3>Total Sales</h3>
+    <p>₹2,45,600</p>
+  </div>
+
+  <div class="card">
+    <h3>Today's Orders</h3>
+    <p>18</p>
+  </div>
+
+  <div class="card">
+    <h3>Pending Orders</h3>
+    <p>6</p>
+  </div>
+
+  <div class="card">
+    <h3>Low Stock</h3>
+    <p>4 Items</p>
+  </div>
+
+  <div class="card">
+    <h3>Monthly Revenue</h3>
+    <p>₹5.2L</p>
+  </div>
+
+  <div class="card">
+    <h3>Growth</h3>
+    <p>+18%</p>
+  </div>
+
+</div>
+`;
+
+}
+
+
+/* ================= PRODUCTS ================= */
+async function showProducts(){
+
+document.getElementById("main").innerHTML = `
+<h2>📦 Product Management</h2>
+
+<div class="form-box">
+<h3>Add / Update Product</h3>
+
+<input id="pname" placeholder="Product Name">
+<input id="pcategory" placeholder="Category">
+<input id="pprice" placeholder="Price">
+<input id="pstock" placeholder="Stock">
+
+<button class="btn" onclick="saveProduct()">Save Product</button>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Category</th>
+<th>Price</th>
+<th>Stock</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="productTable"></tbody>
+</table>
+`;
+
+loadProducts();
+}
+
+
+/* ================= ORDERS ================= */
+
+function showOrders(){
+
+document.getElementById("main").innerHTML=`
+
+<h2>🛒 Order Management</h2>
+
+<table>
+
+<tr>
+<th>Order ID</th>
+<th>Customer</th>
+<th>Total</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+<tr>
+<td>#1023</td>
+<td>Rahul</td>
+<td>₹2500</td>
+<td><span class="status pending">Pending</span></td>
+<td>
+<button class="btn">Invoice</button>
+<button class="btn-red">Cancel</button>
+</td>
+</tr>
+
+<tr>
+<td>#1024</td>
+<td>Ankit</td>
+<td>₹900</td>
+<td><span class="status shipped">Shipped</span></td>
+<td>
+<button class="btn">Track</button>
+</td>
+</tr>
+
+</table>
+`;
+
+}
+
+
+/* ================= CUSTOMERS ================= */
+
+function showCustomers(){
+
+document.getElementById("main").innerHTML=`
+
+<h2>👥 Customer Management</h2>
+
+<table>
+
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Orders</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+<tr>
+<td>Rahul</td>
+<td>rahul@gmail.com</td>
+<td>5</td>
+<td>Active</td>
+<td>
+<button class="btn-red">Block</button>
+</td>
+</tr>
+
+<tr>
+<td>Ankit</td>
+<td>ankit@gmail.com</td>
+<td>2</td>
+<td>Active</td>
+<td>
+<button class="btn-red">Block</button>
+</td>
+</tr>
+
+</table>
+`;
+
+}
+
+
+/* ================= INVENTORY ================= */
+
+function showInventory(){
+
+document.getElementById("main").innerHTML=`
+
+<h2>🏭 Inventory Control</h2>
+
+<table>
+
+<tr>
+<th>Product</th>
+<th>Stock</th>
+<th>Min Level</th>
+<th>Supplier</th>
+<th>Status</th>
+</tr>
+
+<tr>
+<td>Box 12x10</td>
+<td>20</td>
+<td>50</td>
+<td>ABC Ltd</td>
+<td>⚠️ Low</td>
+</tr>
+
+<tr>
+<td>Tape</td>
+<td>120</td>
+<td>40</td>
+<td>XYZ Traders</td>
+<td>✔ OK</td>
+</tr>
+
+</table>
+`;
+
+}
+
+
+/* ================= REPORTS ================= */
+
+function showReports(){
+
+document.getElementById("main").innerHTML=`
+
+<h2>📈 Reports & Analytics</h2>
+
+<div class="cards">
+
+<div class="card">
+<h3>Daily Sales</h3>
+<p>₹8,200</p>
+</div>
+
+<div class="card">
+<h3>Monthly Sales</h3>
+<p>₹2.4L</p>
+</div>
+
+<div class="card">
+<h3>GST Collected</h3>
+<p>₹44,100</p>
+</div>
+
+<div class="card">
+<h3>Profit</h3>
+<p>₹78,000</p>
+</div>
+
+</div>
+
+<br>
+
+<button class="btn">Download Excel</button>
+<button class="btn">Download PDF</button>
+
+`;
+
+}
+
+
+/* ================= SETTINGS ================= */
+
+function showSettings(){
+
+document.getElementById("main").innerHTML=`
+
+<h2>⚙️ System Settings</h2>
+
+<div class="form-box">
+
+<h3>Company Details</h3>
+
+<input value="Sakhi Enterprises">
+<input value="27ABCDE1234F1Z">
+<input value="HDFC Bank">
+<input value="1234567890">
+
+<button class="btn">Save</button>
+
+</div>
+
+<div class="form-box">
+
+<h3>Theme</h3>
+
+<select>
+<option>Green</option>
+<option>Dark</option>
+<option>Light</option>
+</select>
+
+<button class="btn">Apply</button>
+
+</div>
+
+`;
+
+}
+
+let editingId = null;
+
+async function loadProducts(){
+  const res = await fetch("/api/product");   // ✅ FIXED
+  const products = await res.json();
+
+  const table = document.getElementById("productTable");
+  table.innerHTML = "";
+
+  products.forEach(p=>{
+    table.innerHTML += `
+      <tr>
+        <td>${p.name}</td>
+        <td>${p.category}</td>
+        <td>₹${p.price}</td>
+        <td>${p.stock}</td>
+        <td>
+          <button class="btn-blue btn"
+            onclick="editProduct('${p._id}','${p.name}','${p.category}','${p.price}','${p.stock}')">
+            Edit
+          </button>
+          <button class="btn-red btn"
+            onclick="deleteProduct('${p._id}')">
+            Delete
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+async function saveProduct(){
+
+  const product = {
+    name: document.getElementById("pname").value,
+    category: document.getElementById("pcategory").value,
+    price: document.getElementById("pprice").value,
+    stock: document.getElementById("pstock").value
+  };
+
+  if(editingId){
+    await fetch(`/api/product/${editingId}`,{
+      method:"PUT",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(product)
+    });
+    editingId = null;
+  } else {
+    await fetch("/api/product",{   // ✅ FIXED
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(product)
+    });
+  }
+
+  showProducts();
+}
+
+function editProduct(id,name,category,price,stock){
+  document.getElementById("pname").value = name;
+  document.getElementById("pcategory").value = category;
+  document.getElementById("pprice").value = price;
+  document.getElementById("pstock").value = stock;
+  editingId = id;
+}
+
+async function deleteProduct(id){
+  if(confirm("Delete this product?")){
+    await fetch(`/api/product/${id}`,{
+      method:"DELETE"
+    });
+    loadProducts();
+  }
+}
+</script>
+
+</body>
+</html>
