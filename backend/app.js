@@ -45,4 +45,17 @@ app.get("/contact", (req, res) => {
   res.sendFile(path.join(process.cwd(), "public", "contact.html"));
 });
 
+// Handle favicon requests to prevent 404 errors
+app.get("/favicon.ico", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "public", "assets", "images", "logo.png"));
+});
+
+app.get("/contact/favicon.ico", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "public", "assets", "images", "logo.png"));
+});
+
+app.get("/contact/apple-touch-icon.png", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "public", "assets", "images", "logo.png"));
+});
+
 export default app;
