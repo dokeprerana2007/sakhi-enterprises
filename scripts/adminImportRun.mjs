@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-const API = `http://localhost:${process.env.PORT||3000}`;
+const API = process.env.API_URL || `http://localhost:${process.env.PORT||3000}`;
 const email = process.env.ADMIN_EMAIL || 'admin@example.com';
 const password = process.env.ADMIN_PASSWORD || 'StrongP@ssw0rd';
 

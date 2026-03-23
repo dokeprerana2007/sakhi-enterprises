@@ -1,8 +1,11 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 // fetch is built-in in Node.js 18+
 
-const BASE_URL = 'http://localhost:3000';
-const ADMIN_EMAIL = 'admin@sakhi.com';
-const ADMIN_PASSWORD = 'password123';
+const BASE_URL = process.env.API_URL || `http://localhost:${process.env.PORT||3000}`;
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@sakhi.com';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'password123';
 
 async function test() {
   console.log('🧪 Testing Admin API Endpoints\n');

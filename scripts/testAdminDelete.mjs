@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-const API = `http://localhost:${process.env.PORT||3000}`;
+const API = process.env.API_URL || `http://localhost:${process.env.PORT||3000}`;
 async function run(){
   try{
     const res = await fetch(`${API}/api/products`);
