@@ -42,12 +42,13 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(process.cwd(), "public", "index.html"));
 });
 
-// Catch-all handler: serve HTML files for clean URLs (exclude API routes)
+// Specific clean URLs for known pages (avoid conflicts with API routes)
+const knownPages = ['contact', 'about', 'login', 'signup', 'profile'];
 app.get('/:page', (req, res, next) => {
   const page = req.params.page;
   
-  // Skip if this looks like an API route or file with extension
-  if (page.includes('.') || page.startsWith('api')) {
+  // Only serve HTML for known pages, skip API routes and files with extensions
+  if (page.includes('.') || page.startsWith('api') || !knownPages.includes(page)) {
     return next();
   }
   
