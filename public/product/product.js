@@ -823,7 +823,8 @@ function mapServerProduct(p){
 
 async function fetchProductsFromServer(){
   try{
-    const res = await fetch('/api/products');
+    const BACKEND = window.location.origin;
+    const res = await fetch(`${BACKEND}/api/products`);
     if(!res.ok) throw new Error('network');
     const data = await res.json();
     return data.map(mapServerProduct);
@@ -846,7 +847,8 @@ async function loadAndInit(){
 }
 
 async function renderCartCount(){
-  const res = await fetch("/cart", { credentials: "include" });
+  const BACKEND = window.location.origin;
+  const res = await fetch(`${BACKEND}/cart`, { credentials: "include" });
   if(res.status !== 200) return;
 
   const cart = await res.json();
@@ -1149,7 +1151,8 @@ addToCartBtn.addEventListener("click", async () => {
   if (!item) return;
 
   try {
-    const res = await fetch("/cart/add", {
+    const BACKEND = window.location.origin;
+    const res = await fetch(`${BACKEND}/cart/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

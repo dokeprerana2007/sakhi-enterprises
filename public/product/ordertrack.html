@@ -126,7 +126,8 @@ async function loadOrder() {
                 </div>`;
         }, 8000);
 
-        const res = await fetch(`/order/${orderId}`, {
+        const BACKEND = window.location.origin;
+        const res = await fetch(`${BACKEND}/order/${orderId}`, {
             credentials: "include"
         });
 
@@ -316,7 +317,8 @@ async function performCancelOrder(reason) {
         const params = new URLSearchParams(window.location.search);
         const orderId = params.get("orderId");
 
-        const res = await fetch(`/order/${orderId}/item/0/status`, {
+        const BACKEND = window.location.origin;
+        const res = await fetch(`${BACKEND}/order/${orderId}/item/0/status`, {
             method: "PUT",
             credentials: "include",
             headers: { "Content-Type": "application/json" },

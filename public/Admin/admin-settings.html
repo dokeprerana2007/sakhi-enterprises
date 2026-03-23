@@ -71,7 +71,8 @@
       const oldpwd = document.getElementById('oldpwd').value;
       const newpwd = document.getElementById('newpwd').value;
       try{
-        const res = await fetch('/api/admin/change-password',{ method:'PUT', headers:{'Content-Type':'application/json', Authorization: 'Bearer '+localStorage.getItem('adminToken')}, body: JSON.stringify({ oldPassword: oldpwd, newPassword: newpwd }) });
+        const BACKEND = window.location.origin;
+        const res = await fetch(`${BACKEND}/api/admin/change-password`,{ method:'PUT', headers:{'Content-Type':'application/json', Authorization: 'Bearer '+localStorage.getItem('adminToken')}, body: JSON.stringify({ oldPassword: oldpwd, newPassword: newpwd }) });
         const j = await res.json();
         if(res.ok) alert('Password changed'); else alert(j.message||'Failed');
       }catch(err){ alert('Error: '+err.message); }

@@ -156,7 +156,8 @@
 
 <script src="product.js"></script>
 <script>
-fetch("/profiledata", { credentials:"include" })
+const BACKEND = window.location.origin;
+fetch(`${BACKEND}/profiledata`, { credentials:"include" })
   .then(res=>{
     if(res.status!==200){
       window.location.href="/login.html";

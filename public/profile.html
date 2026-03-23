@@ -155,7 +155,9 @@
 
 <script>
 
-fetch('/api/profile/profiledata', { credentials: "include" })
+const BACKEND = window.location.origin;
+
+fetch(`${BACKEND}/api/profile/profiledata`, { credentials: "include" })
 
   .then(res => {
     if (!res.ok) throw new Error("Unauthorized");
@@ -353,7 +355,8 @@ async function saveAddress() {
 
   try {
 
-    const res = await fetch("/api/profile/update-address", {
+    const BACKEND = window.location.origin;
+    const res = await fetch(`${BACKEND}/api/profile/update-address`, {
 
       method: "PUT",
 

@@ -527,7 +527,8 @@ document.getElementById("main").innerHTML=`
 let editingId = null;
 
 async function loadProducts(){
-  const res = await fetch("/api/product");   // ✅ FIXED
+  const BACKEND = window.location.origin;
+  const res = await fetch(`${BACKEND}/api/product`);   // ✅ FIXED
   const products = await res.json();
 
   const table = document.getElementById("productTable");
@@ -564,14 +565,16 @@ async function saveProduct(){
   };
 
   if(editingId){
-    await fetch(`/api/product/${editingId}`,{
+    const BACKEND = window.location.origin;
+    await fetch(`${BACKEND}/api/product/${editingId}`,{
       method:"PUT",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify(product)
     });
     editingId = null;
   } else {
-    await fetch("/api/product",{   // ✅ FIXED
+    const BACKEND = window.location.origin;
+    await fetch(`${BACKEND}/api/product`,{   // ✅ FIXED
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify(product)
@@ -591,7 +594,8 @@ function editProduct(id,name,category,price,stock){
 
 async function deleteProduct(id){
   if(confirm("Delete this product?")){
-    await fetch(`/api/product/${id}`,{
+    const BACKEND = window.location.origin;
+    await fetch(`${BACKEND}/api/product/${id}`,{
       method:"DELETE"
     });
     loadProducts();

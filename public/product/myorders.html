@@ -46,7 +46,8 @@ box-shadow:0 2px 5px rgba(0,0,0,.05);border-left:5px solid #1b5e20}
 
 async function getOrders() {
   try {
-    const res = await fetch("/my-orders", {
+    const BACKEND = window.location.origin;
+    const res = await fetch(`${BACKEND}/my-orders`, {
       method: "GET",
       credentials: "include"
     });
@@ -170,7 +171,8 @@ renderOrders();
 
 
 // Profile auth check
-fetch("/profiledata", {
+const BACKEND = window.location.origin;
+fetch(`${BACKEND}/profiledata`, {
   method: "GET",
   credentials: "include"
 }).then(res => {

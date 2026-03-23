@@ -162,7 +162,8 @@ function showManualSlide(n) {
 document.addEventListener('DOMContentLoaded', () => {
   async function updateAuthMenu() {
     try {
-      const res = await fetch('/api/profile/profiledata', { credentials: 'include' });
+      const BACKEND = window.location.origin;
+      const res = await fetch(`${BACKEND}/api/profile/profiledata`, { credentials: 'include' });
       if (!res.ok) throw new Error('Not authenticated');
 
       // Logged in: hide login/signup links and show profile dropdown/icon
