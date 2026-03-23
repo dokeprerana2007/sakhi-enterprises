@@ -1,7 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
-import fs from "fs";
 
 import authRoutes from "./routes/authRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
@@ -33,7 +32,7 @@ app.use(adminRoutes);
 app.use(productRoutes);
 
 // CONTACT ROUTE (FIXED)
-app.use("/api", contactRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Home page
 app.get("/", (req, res) => {
