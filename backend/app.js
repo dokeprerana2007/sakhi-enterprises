@@ -42,8 +42,26 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(process.cwd(), "public", "index.html"));
 });
 
-// Specific clean URLs for known pages (avoid conflicts with API routes)
-const knownPages = ['contact', 'about', 'login', 'signup', 'profile'];
+// Specific route for contact page to ensure it works
+app.get("/contact", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "public", "contact.html"));
+});
+
+// Handle common favicon and resource requests to prevent 404s
+app.get("/favicon.ico", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "public", "assets", "images", "logo.png"));
+});
+
+app.get("/contact/favicon.ico", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "public", "assets", "images", "logo.png"));
+});
+
+app.get("/contact/apple-touch-icon.png", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "public", "assets", "images", "logo.png"));
+});
+
+// Specific clean URLs for other known pages (avoid conflicts with API routes)
+const knownPages = ['about', 'login', 'signup', 'profile'];
 app.get('/:page', (req, res, next) => {
   const page = req.params.page;
   
