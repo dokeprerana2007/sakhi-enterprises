@@ -5,9 +5,9 @@ import adminAuth from "../middleware/adminAuthMiddleware.js";
 const router = express.Router();
 
 // POST contact
-router.post("/contact", saveContact);
+router.post("/api/contact", saveContact);
 
 // GET all contacts (admin)
-router.get("/admin/contacts", adminAuth, getAllContacts);
+router.get("/api/admin/contact", adminAuth, getAllContacts);
 
 export default router;

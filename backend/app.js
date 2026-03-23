@@ -32,7 +32,7 @@ app.use(adminRoutes);
 app.use(productRoutes);
 
 // CONTACT ROUTE (FIXED)
-app.use("/api/contact", contactRoutes);
+app.use("/api", contactRoutes);
 
 // Home page
 app.get("/", (req, res) => {
