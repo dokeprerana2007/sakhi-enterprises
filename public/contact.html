@@ -172,7 +172,7 @@
 
         try {
             const BACKEND = window.location.origin;
-            const res = await fetch(`${BACKEND}/contact`, {
+            const res = await fetch(`${BACKEND}/api/contact`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
