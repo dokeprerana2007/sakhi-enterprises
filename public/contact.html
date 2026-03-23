@@ -156,11 +156,20 @@
     
 </footer>
 <script>
+    console.log("Contact form script loaded");
+    document.getElementById("contactForm").addEventListener("submit", function(e) {
+    alert("Form submitted! Check console for details.");
+});
+
     const form = document.getElementById("contactForm");
     const statusMsg = document.getElementById("statusMessage");
 
+    console.log("Form element:", form);
+
     form.addEventListener("submit", async (e) => {
+        console.log("Form submit event triggered");
         e.preventDefault();
+        console.log("Default prevented, processing form data");
 
         const data = {
             name: form.name.value,
@@ -169,14 +178,19 @@
             message: form.message.value,
         };
 
+        console.log("Form data:", data);
+
         try {
+            console.log("Making fetch request to /api/contact");
             const res = await fetch("/api/contact", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             });
 
+            console.log("Fetch response status:", res.status);
             const result = await res.json();
+            console.log("Fetch result:", result);
 
             if (res.ok && result.success) {
                 statusMsg.textContent = "Message sent successfully!";
@@ -187,6 +201,7 @@
                 throw new Error(result.message);
             }
         } catch (err) {
+            console.error("Error:", err);
             statusMsg.textContent = "Something went wrong. Try again.";
             statusMsg.className = "mt-4 bg-red-200 text-red-800 p-3 rounded";
             statusMsg.classList.remove("hidden");
