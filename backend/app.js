@@ -58,4 +58,9 @@ app.get("/contact/apple-touch-icon.png", (req, res) => {
   res.sendFile(path.join(process.cwd(), "public", "assets", "images", "logo.png"));
 });
 
+// Handle React/HTML routes on Railway (only for non-API routes)
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(process.cwd(), "public", "index.html"));
+});
+
 export default app;

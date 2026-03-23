@@ -155,7 +155,6 @@
     <p>© 2026 Sakhi Enterprises — Packaging Solutions You Can Trust.</p>
     
 </footer>
-
 <script>
     const form = document.getElementById("contactForm");
     const statusMsg = document.getElementById("statusMessage");
@@ -171,8 +170,7 @@
         };
 
         try {
-            const BACKEND = window.location.origin;
-            const res = await fetch(`${BACKEND}/api/contact`, {
+            const res = await fetch("/api/contact", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
@@ -188,7 +186,7 @@
             } else {
                 throw new Error(result.message);
             }
-        } catch {
+        } catch (err) {
             statusMsg.textContent = "Something went wrong. Try again.";
             statusMsg.className = "mt-4 bg-red-200 text-red-800 p-3 rounded";
             statusMsg.classList.remove("hidden");
