@@ -93,15 +93,9 @@ h2{margin-top:0;color:var(--green);}
       Loading address...
     </div>
 
-    <button class="btn change-btn" onclick="changeAddress()">
-      Change Address
-    </button>
-
+    <button class="btn change-btn" onclick="changeAddress()">Change Address</button>
     <hr>
-
-    <button class="btn change-btn" onclick="goToShop()">
-      ➕ Add More Products
-    </button>
+    <button class="btn change-btn" onclick="goToShop()">➕ Add More Products</button>
 
     <h2>Order Summary</h2>
     <div id="summary-items"></div>
@@ -111,9 +105,7 @@ h2{margin-top:0;color:var(--green);}
       <span id="summary-total">₹0</span>
     </div>
 
-    <button id="payBtn" class="btn">
-      Pay ₹0
-    </button>
+    <button id="payBtn" class="btn">Pay ₹0</button>
 
   </div>
 </div>
@@ -121,156 +113,76 @@ h2{margin-top:0;color:var(--green);}
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
-
 const RAZORPAY_KEY = "rzp_test_S8l9sAf2Mc1cyv";
 const BACKEND = window.location.origin;
-
 let checkoutData = {};
 
-/* ================= LOAD CHECKOUT ================= */
-
+// ================= LOAD CHECKOUT =================
 async function loadCheckout() {
+  console.log("Checkout loaded");
 
-
-    // ✅ SINGLE ITEM CHECKOUT FROM CART
   const params = new URLSearchParams(window.location.search);
   const itemId = params.get("itemId");
 
+  // SINGLE ITEM
   if (itemId) {
-    try {
-      const res = await fetch(`${BACKEND}/cart/${itemId}`, {
-        credentials: "include"
-      });
-
-      if (!res.ok) {
-        alert("Item not found");
-        return;
+    const res = await fetch(`${BACKEND}/cart/${itemId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("token")
       }
+    });
 
-      const item = await res.json();
+    const item = await res.json();
 
-      checkoutData.items = [item];
-      checkoutData.total = item.price * item.quantity;
+    checkoutData.items = [item];
+    checkoutData.total = item.price * item.quantity;
 
-      document.getElementById("summary-items").innerHTML = `
-        <div class="summary-item">
-          <div>
-            <strong>${item.name}</strong><br>
-            Qty: ${item.quantity}
-          </div>
-          <strong>₹${item.price * item.quantity}</strong>
+    document.getElementById("summary-items").innerHTML = `
+      <div class="summary-item">
+        <div>
+          <strong>${item.name}</strong><br>
+          Qty: ${item.quantity}
         </div>
-      `;
+        <strong>₹${item.price * item.quantity}</strong>
+      </div>
+    `;
 
-      document.getElementById("summary-total").textContent =
-        "₹" + checkoutData.total;
+    document.getElementById("summary-total").textContent = "₹" + checkoutData.total;
+    document.getElementById("payBtn").textContent = "Pay ₹" + checkoutData.total;
 
-      document.getElementById("payBtn").textContent =
-        "Pay ₹" + checkoutData.total;
-
-      await loadAddress();
-      return;   // 🚨 VERY IMPORTANT
-    } catch (err) {
-      console.error(err);
-      alert("Failed to load item");
-      return;
-    }
+    await loadAddress();
+    return;
   }
 
-  const directOrder = sessionStorage.getItem("directOrder");
+  // FULL CART
+  try {
+    const res = await fetch(`${BACKEND}/cart`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      }
+    });
 
-  // ✅ FIX START (merge instead of replace)
-  if (directOrder) {
+    const data = await res.json();
 
-    const item = JSON.parse(directOrder);
-
-    let existingOrders = JSON.parse(sessionStorage.getItem("directOrders")) || [];
-
-    existingOrders.push(item);
-
-    sessionStorage.setItem("directOrders", JSON.stringify(existingOrders));
-    sessionStorage.removeItem("directOrder");
-  }
-
-  const allDirectOrders = JSON.parse(sessionStorage.getItem("directOrders")) || [];
-
-  if (allDirectOrders.length > 0) {
-
-    checkoutData.items = allDirectOrders;
-
-    let total = 0;
     let html = "";
+    let total = 0;
 
-    allDirectOrders.forEach(item => {
-
+    data.forEach(item => {
       total += item.price * item.quantity;
-
       html += `
         <div class="summary-item">
           <div>
-            <strong>${item.name}</strong><br>
+            <strong>${item.name}</strong>
             Qty: ${item.quantity}
           </div>
           <strong>₹${item.price * item.quantity}</strong>
         </div>
       `;
     });
-
-    checkoutData.total = total;
-
-    document.getElementById("summary-items").innerHTML = html;
-    document.getElementById("summary-total").textContent = "₹" + total;
-    document.getElementById("payBtn").textContent = "Pay ₹" + total;
-
-    await loadAddress();
-    return;
-  }
-  // ✅ FIX END
-
-
-  // ================= CART (UNCHANGED) =================
-
-  try {
-
-fetch(`${BACKEND}/cart`, {
-  credentials: "include",
-  headers: {
-    "Authorization": "Bearer " + localStorage.getItem("token")
-  }
-});
-    if (!res.ok) {
-      alert("Please login again");
-      return;
-    }
-
-    const data = await res.json();
-
-    checkoutData = data;
-
-    let html = "";
-    let total = 0;
-
-    if (!data || data.length === 0) {
-
-      html = "<p>Your cart is empty.</p>";
-
-    } else {
-
-      data.forEach(item => {
-
-        total += item.price * item.quantity;
-
-        html += `
-          <div class="summary-item">
-            <div>
-             <strong>${item.name}</strong>
-              Qty: ${item.quantity}
-            </div>
-            <strong>₹${item.price * item.quantity}</strong>
-          </div>
-        `;
-      });
-    }
 
     document.getElementById("summary-items").innerHTML = html;
     document.getElementById("summary-total").textContent = "₹" + total;
@@ -279,68 +191,45 @@ fetch(`${BACKEND}/cart`, {
     checkoutData.total = total;
     checkoutData.items = data;
 
-await loadAddress();
+    await loadAddress();
 
   } catch (err) {
     console.error(err);
-    alert("Failed to load checkout");
+    alert("Failed to load cart");
   }
 }
 
-/* ================= LOAD ADDRESS ================= */
-
+// ================= LOAD ADDRESS =================
 async function loadAddress() {
-  try {
-    const res = await fetch(`${BACKEND}/api/profile/profiledata`, {
-  method: "GET",
-  credentials: "include",
-  headers: {
-    "Authorization": "Bearer " + localStorage.getItem("token")
-  },
-  cache: "no-store"
-});
-
-    if (!res.ok) {
-      alert("Please login again");
-      return;
+  const res = await fetch(`${BACKEND}/api/profile/profiledata`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Authorization": "Bearer " + localStorage.getItem("token")
     }
+  });
 
-    const data = await res.json();
-    checkoutData.address = data.address;
-    renderAddress(data);
-
-  } catch (err) {
-    console.error(err);
-    alert("Failed to load address");
-  }
-}
-
-function renderAddress(data){
+  const data = await res.json();
+  checkoutData.address = data.address;
 
   if (!data.address) {
-    document.getElementById("address-box").innerHTML = `
-      <strong>No address found</strong><br>
-      Please add address in profile
-    `;
+    document.getElementById("address-box").innerHTML = "No address found. Add in profile.";
   } else {
-
     const addr = data.address;
-
     document.getElementById("address-box").innerHTML = `
       <strong>${data.username}</strong><br>
       ${addr.fullName}<br>
       ${addr.street}, ${addr.city}<br>
       ${addr.state} - ${addr.pincode}<br>
-      ${addr.country}<br>
       Phone: ${data.phone}
     `;
   }
 }
 
-loadCheckout();
+// LOAD AFTER PAGE READY
+document.addEventListener("DOMContentLoaded", loadCheckout);
 
-/* ================= PAYMENT (UNCHANGED) ================= */
-
+// ================= PAYMENT =================
 document.getElementById("payBtn").addEventListener("click", async () => {
 
   if (!checkoutData.total || checkoutData.total <= 0) {
@@ -348,132 +237,59 @@ document.getElementById("payBtn").addEventListener("click", async () => {
     return;
   }
 
-  if (!checkoutData.address) {
-    alert("Please add delivery address first");
-    window.location.href = "/profile.html";
-    return;
-  }
+  const orderRes = await fetch(`${BACKEND}/api/payment/create-order`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + localStorage.getItem("token")
+    },
+    body: JSON.stringify({ amount: checkoutData.total })
+  });
 
-  try {
+  const order = await orderRes.json();
 
-    const orderRes = await fetch(`${BACKEND}/api/payment/create-order`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token")
-      },
-      body: JSON.stringify({
-        amount: checkoutData.total
-      })
-    });
+  const options = {
+    key: RAZORPAY_KEY,
+    amount: order.amount,
+    currency: "INR",
+    name: "Sakhi Enterprises",
+    order_id: order.id,
+    handler: async function (response) {
 
-    const order = await orderRes.json();
-
-    if (!order.id) {
-      alert("Order creation failed");
-      return;
-    }
-
-    const options = {
-      key: RAZORPAY_KEY,
-      amount: order.amount,
-      currency: "INR",
-      name: "Sakhi Enterprises",
-      description: "Order Payment",
-      order_id: order.id,
-
-      handler: async function (response) {
-
-        try {
-
-          await fetch(`${BACKEND}/api/payment/verify`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token")
-            },
-            body: JSON.stringify({
-              ...response,
-              amount: checkoutData.total
-            })
-          });
-
-         await fetch(`${BACKEND}/order/place`, {
-  method: "POST",
-  credentials: "include",   // ⭐ THIS IS THE FIX
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    items: checkoutData.items,
-    address: checkoutData.address
-  })
-});
-
-          // Smart cart handling (safe for both direct & full cart checkout)
-
-if (sessionStorage.getItem("directOrders")) {
-
-  for (let item of checkoutData.items) {
-
-    if (item._id) {
-      await fetch(`${BACKEND}/cart/remove/${item._id}`, {
-        method: "DELETE",
-        credentials: "include"
+      await fetch(`${BACKEND}/api/payment/verify`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify(response)
       });
+
+      await fetch(`${BACKEND}/order/place`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: checkoutData.items,
+          address: checkoutData.address
+        })
+      });
+
+      alert("Order Placed Successfully!");
+      window.location.href = "success.html";
     }
+  };
 
-  }
-
-} else {
-
- // Remove only ordered items from cart
-for (let item of checkoutData.items) {
-
-  if (item._id) {
-    await fetch(`${BACKEND}/cart/remove/${item._id}`, {
-      method: "DELETE",
-      credentials: "include"
-    });
-  }
-
-}
-}
-          sessionStorage.removeItem("directOrders");
-
-          alert("Order Placed Successfully!");
-          window.location.href = "success.html";
-
-        } catch (err) {
-          console.error(err);
-          alert("Something went wrong");
-        }
-
-      },
-
-      theme: { color: "#2e7d32" }
-    };
-
-    const rzp = new Razorpay(options);
-    rzp.open();
-
-  } catch (err) {
-    console.error(err);
-    alert("Payment failed. Try again.");
-  }
-
+  const rzp = new Razorpay(options);
+  rzp.open();
 });
 
-/* ================= NAV ================= */
-
+// NAV
 function changeAddress() {
   window.location.href = "/profile.html";
 }
-
 function goToShop() {
   window.location.href = "product.html";
 }
-
 </script>
 
 </body>
