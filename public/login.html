@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - Sakhi Enterprises</title>
 
   <style>
@@ -9,11 +10,12 @@
 
     body {
       font-family: Arial, sans-serif;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #e9f7ee;
+      padding: 20px;
     }
 
     .login-box {
@@ -21,27 +23,31 @@
       padding: 30px;
       border-radius: 15px;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-      width: 330px;
+      width: 100%;
+      max-width: 330px;
       text-align: center;
       border-top: 4px solid #1b8f3a;
     }
 
     .company-logo {
-      width: 100px;
+      width: 80px;
+      max-width: 100%;
       margin-bottom: 10px;
+      height: auto;
     }
 
     input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin: 8px 0;
       border-radius: 5px;
       border: 1px solid #1b8f3a;
+      font-size: 16px;
     }
 
     button {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       background-color: #1b8f3a;
       color: white;
       border: none;
@@ -49,9 +55,11 @@
       font-weight: bold;
       cursor: pointer;
       margin-top: 12px;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
     }
 
-    button:hover {
+    button:hover, button:active {
       background-color: #0b6b32;
     }
 
@@ -69,6 +77,21 @@
 
     .signup-text a:hover {
       text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .login-box {
+        padding: 20px;
+      }
+      .company-logo {
+        width: 70px;
+      }
+      input, button {
+        padding: 10px;
+      }
+      .signup-text {
+        font-size: 12px;
+      }
     }
   </style>
 </head>

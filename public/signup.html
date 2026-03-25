@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign Up - Sakhi Enterprises</title>
 
     <style>
@@ -13,11 +14,12 @@
 
         body {
             font-family: Arial, sans-serif;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #e9f7ee; /* Light green background */
+            background: #e9f7ee;
+            padding: 20px;
         }
 
         .background-overlay {
@@ -28,42 +30,65 @@
         }
 
         .login-box {
-            background-color: #ffffff; /* White card */
+            background-color: #ffffff;
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
-            width: 330px;
+            width: 100%;
+            max-width: 330px;
             text-align: center;
-            border-top: 4px solid #1b8f3a; /* Green top border */
+            border-top: 4px solid #1b8f3a;
         }
 
         .company-logo {
-            width: 100px;
+            width: 80px;
+            max-width: 100%;
             margin-bottom: 10px;
+            height: auto;
         }
 
         input, select {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
             border-radius: 5px;
-            border: 1px solid #1b8f3a; /* Green outline */
+            border: 1px solid #1b8f3a;
+            font-size: 16px;
+            font-family: inherit;
         }
 
         button {
             width: 100%;
-            padding: 10px;
-            background-color: #1b8f3a; /* Green button */
+            padding: 12px;
+            background-color: #1b8f3a;
             color: white;
             border: none;
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
         }
 
-        button:hover {
-            background-color: #0b6b32; /* Darker green */
+        button:hover, button:active {
+            background-color: #0b6b32;
+        }
+
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 20px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            .company-logo {
+                width: 70px;
+            }
+            input, select, button {
+                padding: 10px;
+                font-size: 16px;
+                margin: 8px 0;
+            }
         }
     </style>
 </head>

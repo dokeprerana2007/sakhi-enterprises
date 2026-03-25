@@ -170,3 +170,187 @@ input:focus, textarea:focus, select:focus{
   text-align:center;
   margin-top:40px;
 }
+
+/* RESPONSIVE DESIGN */
+@media (max-width:1024px){
+  .main{
+    padding:16px;
+  }
+  
+  .card-row{
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  
+  .card{
+    flex:0 1 calc(50% - 6px);
+  }
+}
+
+@media (max-width:768px){
+  .app{
+    flex-direction:column;
+  }
+  
+  .sidebar{
+    width:100%;
+    padding:12px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+    min-height:auto;
+  }
+  
+  .sidebar h2{
+    flex-basis:100%;
+    margin-bottom:10px;
+    font-size:18px;
+  }
+  
+  .nav{
+    display:flex;
+    gap:8px;
+    width:100%;
+    flex-wrap:wrap;
+  }
+  
+  .nav li{
+    margin:0;
+    flex:1;
+    min-width:80px;
+  }
+  
+  .nav a{
+    padding:8px;
+    font-size:13px;
+    text-align:center;
+  }
+  
+  .main{
+    padding:12px;
+    order:2;
+  }
+  
+  .card-row{
+    flex-direction:column;
+    gap:10px;
+  }
+  
+  .card{
+    flex:1;
+  }
+  
+  .top{
+    flex-direction:column;
+    gap:10px;
+    padding:12px 16px;
+  }
+  
+  table{
+    font-size:13px;
+    overflow-x:auto;
+    display:block;
+  }
+  
+  th, td{
+    padding:8px;
+  }
+}
+
+@media (max-width:600px){
+  .sidebar{
+    padding:10px;
+    gap:6px;
+  }
+  
+  .sidebar h2{
+    font-size:16px;
+    margin-bottom:8px;
+  }
+  
+  .nav{
+    gap:4px;
+  }
+  
+  .nav a{
+    padding:6px;
+    font-size:12px;
+  }
+  
+  .main{
+    padding:10px;
+  }
+  
+  .card{
+    padding:12px;
+  }
+  
+  .top{
+    padding:10px 12px;
+  }
+  
+  .card h4{
+    margin:0 0 8px 0;
+    font-size:14px;
+  }
+  
+  table{
+    font-size:12px;
+  }
+  
+  th, td{
+    padding:6px;
+  }
+  
+  .btn{
+    padding:6px 10px;
+    font-size:12px;
+  }
+}
+
+@media (max-width:480px){
+  body{
+    font-size:13px;
+  }
+  
+  .sidebar{
+    padding:8px;
+  }
+  
+  .sidebar h2{
+    font-size:14px;
+  }
+  
+  .nav a{
+    padding:5px;
+    font-size:11px;
+  }
+  
+  .main{
+    padding:8px;
+  }
+  
+  .card{
+    padding:10px;
+  }
+  
+  .card h4{
+    font-size:12px;
+  }
+  
+  .top{
+    padding:8px 10px;
+    font-size:13px;
+  }
+  
+  input, textarea, select{
+    padding:8px;
+    font-size:14px;
+  }
+  
+  .btn{
+    padding:6px 10px;
+    font-size:11px;
+  }
+}

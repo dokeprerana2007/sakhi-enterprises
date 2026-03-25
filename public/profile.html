@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Profile - Sakhi Enterprises</title>
 
   <style>
@@ -81,6 +82,7 @@
       font-size: 36px;
       font-weight: bold;
       margin-right: 20px;
+      flex-shrink: 0;
     }
 
     .profile-header h3 {
@@ -111,18 +113,97 @@
       border: 1px solid #bcdac7;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .sidebar {
         width: 100%;
         float: none;
+        padding: 20px;
+        min-height: auto;
       }
 
       .profile-section {
         margin-left: 0;
+        padding: 30px 20px;
       }
 
       .info-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+      }
+
+      .avatar {
+        margin-right: 0;
+        margin-bottom: 15px;
+      }
+
+      .profile-section {
+        padding: 20px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .info-item p {
+        padding: 8px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 0;
+      }
+
+      .container {
+        border-radius: 0;
+      }
+
+      .sidebar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 15px;
+      }
+
+      .sidebar h2 {
+        flex-basis: 100%;
+        margin-bottom: 10px;
+      }
+
+      .sidebar a {
+        flex: 1;
+        min-width: calc(50% - 5px);
+        padding: 8px 10px;
+        font-size: 14px;
+        margin: 0;
+      }
+
+      .profile-section {
+        padding: 15px;
+      }
+
+      .profile-header {
+        margin-bottom: 20px;
+      }
+
+      .avatar {
+        width: 70px;
+        height: 70px;
+        font-size: 28px;
+      }
+
+      .profile-header h3 {
+        font-size: 18px;
       }
     }
   </style>

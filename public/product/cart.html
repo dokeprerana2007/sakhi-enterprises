@@ -123,13 +123,61 @@ body{
 }
 
 .item-actions button{
-  flex:0 0 auto;     /* stop stretching */
-  min-width:90px;    /* control size */
+  flex:0 0 auto;
+  min-width:90px;
   height:38px;
   padding:6px 12px;
   margin:0 !important;
   width:auto !important;
   font-size:0.9rem;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width:768px){
+  body{padding:85px 0 30px;font-size:14px;}
+  .site-header{padding:12px 16px;flex-wrap:wrap;gap:10px;}
+  .header-btn{padding:8px 12px;font-size:13px;}
+  .wrap{padding:0 16px;}
+  .cart-item{padding:12px;gap:12px;margin-bottom:12px;flex-direction:column;}
+  .cart-thumb{width:100%;max-width:150px;height:120px;}
+  .qty-box button{padding:5px 8px;font-size:12px;}
+  .qty-box input{width:50px;font-size:13px;}
+  .item-actions{flex-wrap:wrap;gap:6px;}
+  .item-actions button{min-width:80px;height:34px;padding:5px 10px;}
+  .checkout-btn{padding:10px;font-size:0.95rem;}
+  .total-box{padding:16px;font-size:1.15rem;margin-top:16px;}
+}
+
+@media (max-width:600px){
+  body{padding:80px 0 20px;font-size:13px;}
+  .site-header{padding:10px 12px;flex-direction:column;align-items:flex-start;gap:8px;}
+  .header-btn{padding:6px 10px;font-size:12px;width:100%;}
+  .wrap{padding:0 12px;}
+  .cart-item{padding:10px;gap:10px;margin-bottom:10px;}
+  .cart-thumb{width:100px;height:100px;}
+  .qty-box button{padding:4px 6px;font-size:11px;}
+  .qty-box input{width:45px;padding:4px;font-size:12px;}
+  .item-actions{gap:5px;margin-top:8px;}
+  .item-actions button{min-width:70px;height:32px;padding:4px 8px;font-size:11px;}
+  .checkout-btn{padding:8px;font-size:0.9rem;}
+  .total-box{padding:14px;font-size:1.05rem;margin-top:12px;}
+}
+
+@media (max-width:480px){
+  body{padding:75px 0 16px;font-size:12px;}
+  .site-header{padding:8px 10px;gap:6px;flex-wrap:nowrap;}
+  .header-btn{padding:5px 8px;font-size:11px;}
+  .wrap{padding:0 8px;}
+  .cart-item{padding:8px;gap:8px;margin-bottom:8px;}
+  .cart-thumb{width:80px;height:80px;flex-shrink:0;}
+  .qty-box{flex-wrap:wrap;margin-top:4px;}
+  .qty-box button{padding:3px 5px;font-size:10px;}
+  .qty-box input{width:40px;padding:3px;margin:0 4px;font-size:11px;}
+  .item-actions{gap:4px;margin-top:6px;}
+  .item-actions button{min-width:60px;height:28px;padding:3px 6px;font-size:10px;}
+  .checkout-btn{padding:6px;font-size:0.85rem;}
+  .total-box{padding:10px;font-size:0.95rem;margin-top:8px;}
+  input,button{font-size:14px!important;-webkit-appearance:none;}
 }
 </style>
 </head>
