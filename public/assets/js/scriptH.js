@@ -170,16 +170,16 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.nav-links .login-btn').forEach(el => el.style.display = 'none');
       const dropdown = document.getElementById('dropdownMenu');
       if (dropdown) dropdown.style.display = 'none';
-      const profileIcon = document.querySelector('.profile-icon');
-      if (profileIcon) profileIcon.style.display = 'flex';
+      const profileDropdown = document.querySelector('.profile-dropdown');
+      if (profileDropdown) profileDropdown.style.display = 'flex';
 
     } catch (err) {
       // Not logged in: show login/signup and hide profile dropdown/icon
       document.querySelectorAll('.nav-links .login-btn').forEach(el => el.style.display = 'inline-block');
       const dropdown = document.getElementById('dropdownMenu');
       if (dropdown) dropdown.style.display = 'none';
-      const profileIcon = document.querySelector('.profile-icon');
-      if (profileIcon) profileIcon.style.display = 'none';
+      const profileDropdown = document.querySelector('.profile-dropdown');
+      if (profileDropdown) profileDropdown.style.display = 'none';
     }
   }
 

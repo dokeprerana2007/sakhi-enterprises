@@ -341,8 +341,8 @@ let products = [
     type:'Plastic / Poly',
     price:28,
     images:[
-      'stand-up-zip-lock-pouches1.jpg',
-      'Stand-Up Zip-Lock Pouches2.jpg',
+      'Stand-up Zip-Lock Pouches1.jpg',
+      'Stand-up Zip-Lock Pouches2.jpg',
       'Stand-Up Zip-Lock Pouches (Food Grade)2.jpg',
       'Stand-Up Zip-Lock Pouches (Food Grade)3.jpg',
       'Stand-Up Zip-Lock Pouches (Food Grade)4.jpg',
