@@ -1,4 +1,10 @@
 /* ---------- Product data ---------- */
+function normalizeImageName(src){
+  if(!src) return src;
+  // use relative path from product.html location; encode spaces & non-ASCII
+  return encodeURI(src.trim());
+}
+
 let products = [
   {
     name:'Premium White Mailer Boxes',
@@ -29,12 +35,12 @@ let products = [
     type:'Corrugated Fiberboard',
     price:150,
     images:[
-      'Kraft Carton Shipping boxes1.jpg',
+      'kraft carton shipping boxes1.jpg',
       'Kraft Carton Shipping Boxes.jpg',
       'Kraft Carton Shipping Boxes4.jpg',
       'Kraft Carton Shipping Boxes3.jpg',
       'Kraft Carton Shipping Boxes2.jpg',
-      'Kraft Carton Shipping Boxes5.jpg'
+      'kraft carton shipping boxes5.jpg'
     ],
     desc:'Standard brown corrugated cartons for shipping and storage.',
     baseConfig: [{name:'3 Ply (Standard Duty)',price:150},{name:'5 Ply (Medium Duty)',price:210}],
@@ -869,7 +875,7 @@ function render(productsToRender){
     const card = document.createElement('div');
     card.className = 'card';
     const basePrice = (p.baseConfig && p.baseConfig.length>0) ? p.baseConfig[0].price : (p.price || 0);
-    const thumbSrc = (p.images && p.images.length>0) ? p.images[0] : 'https://via.placeholder.com/400x300?text=No+Image';
+    const thumbSrc = (p.images && p.images.length>0) ? normalizeImageName(p.images[0]) : 'https://via.placeholder.com/400x300?text=No+Image';
     card.innerHTML = `
       <div class="thumb"><img src="${thumbSrc}" alt="${escapeHtml(p.name)}" loading="lazy"></div>
       <div class="meta">
@@ -913,7 +919,7 @@ function openModal(product){
   currentIndex = 0;
 
   // set main image
-  modalImage.src = currentImages[currentIndex] || 'https://via.placeholder.com/900x700?text=No+Image';
+  modalImage.src = normalizeImageName(currentImages[currentIndex]) || 'https://via.placeholder.com/900x700?text=No+Image';
   populateThumbs();
 
   // info block under image
@@ -964,7 +970,7 @@ function keyHandler(e){
 function showPrev(){
   if(!currentImages.length) return;
   currentIndex=(currentIndex-1+currentImages.length)%currentImages.length;
-  modalImage.src=currentImages[currentIndex];
+  modalImage.src=normalizeImageName(currentImages[currentIndex]);
   highlightActiveThumb();
 }
 prevBtn.addEventListener('click', showPrev);
@@ -972,7 +978,7 @@ prevBtn.addEventListener('click', showPrev);
 function showNext(){
   if(!currentImages.length) return;
   currentIndex=(currentIndex+1)%currentImages.length;
-  modalImage.src=currentImages[currentIndex];
+  modalImage.src=normalizeImageName(currentImages[currentIndex]);
   highlightActiveThumb();
 }
 nextBtn.addEventListener('click', showNext);
@@ -986,7 +992,7 @@ function populateThumbs(){
     item.setAttribute('role', 'button');
     item.setAttribute('aria-label', `View image ${index+1}`);
     item.onclick = ()=>setMainImage(index);
-    item.innerHTML = `<img src="${img}" alt="Thumbnail ${index+1}" />`;
+    item.innerHTML = `<img src="${normalizeImageName(img)}" alt="Thumbnail ${index+1}" />`;
     modalThumbs.appendChild(item);
   });
   highlightActiveThumb();
