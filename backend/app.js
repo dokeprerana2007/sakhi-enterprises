@@ -17,10 +17,35 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Static folders (FIXED)
-app.use(express.static(path.join(process.cwd(), "public")));
-app.use("/assets", express.static(path.join(process.cwd(), "assets")));
-app.use("/product", express.static(path.join(process.cwd(), "product")));
+// Custom logging middleware to filter out 304 responses
+app.use((req, res, next) => {
+  const originalEnd = res.end;
+  res.end = function(...args) {
+    // Only log non-304 responses or actual errors
+    if (res.statusCode !== 304 && res.statusCode >= 400) {
+      console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - ${res.statusCode}`);
+    }
+    originalEnd.apply(this, args);
+  };
+  next();
+});
+
+// Static folders with cache control
+app.use(express.static(path.join(process.cwd(), "public"), {
+  maxAge: '1d', // Cache for 1 day
+  etag: false, // Disable ETags to reduce 304 responses
+  lastModified: false // Disable last-modified headers
+}));
+app.use("/assets", express.static(path.join(process.cwd(), "assets"), {
+  maxAge: '7d', // Cache assets for 7 days
+  etag: false,
+  lastModified: false
+}));
+app.use("/product", express.static(path.join(process.cwd(), "product"), {
+  maxAge: '1d', // Cache product files for 1 day
+  etag: false,
+  lastModified: false
+}));
 
 // Routes
 app.use(authRoutes);
