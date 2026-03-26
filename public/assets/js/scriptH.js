@@ -169,9 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Logged in: hide login/signup links and show profile dropdown/icon
       document.querySelectorAll('.nav-links .login-btn').forEach(el => el.style.display = 'none');
       const dropdown = document.getElementById('dropdownMenu');
-      if (dropdown) dropdown.style.display = 'block';
+      if (dropdown) dropdown.style.display = 'none';
       const profileIcon = document.querySelector('.profile-icon');
-      if (profileIcon) profileIcon.style.display = 'inline-block';
+      if (profileIcon) profileIcon.style.display = 'flex';
 
     } catch (err) {
       // Not logged in: show login/signup and hide profile dropdown/icon
