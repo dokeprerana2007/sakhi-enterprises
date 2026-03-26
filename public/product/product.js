@@ -1,8 +1,11 @@
 /* ---------- Product data ---------- */
 function normalizeImageName(src){
   if(!src) return src;
-  // use relative path from product.html location; encode spaces & non-ASCII
-  return encodeURI(src.trim());
+  let safe = src.trim();
+  // ensure correct path from product page and handle spaces
+  safe = safe.replace(/^\/+/, "");
+  safe = encodeURI(safe);
+  return `/product/${safe}`;
 }
 
 let products = [
@@ -338,7 +341,7 @@ let products = [
     type:'Plastic / Poly',
     price:28,
     images:[
-      'Stand-Up Zip-Lock Pouches1.jpg',
+      'stand-up-zip-lock-pouches1.jpg',
       'Stand-Up Zip-Lock Pouches2.jpg',
       'Stand-Up Zip-Lock Pouches (Food Grade)2.jpg',
       'Stand-Up Zip-Lock Pouches (Food Grade)3.jpg',
