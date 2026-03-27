@@ -38,12 +38,12 @@ let products = [
     type:'Corrugated Fiberboard',
     price:150,
     images:[
-      'kraft carton shipping boxes1.jpg',
+      'Kraft Carton Shipping Boxes1.jpg',
       'Kraft Carton Shipping Boxes.jpg',
       'Kraft Carton Shipping Boxes4.jpg',
       'Kraft Carton Shipping Boxes3.jpg',
       'Kraft Carton Shipping Boxes2.jpg',
-      'kraft carton shipping boxes5.jpg'
+      'Kraft Carton Shipping Boxes5.jpg'
     ],
     desc:'Standard brown corrugated cartons for shipping and storage.',
     baseConfig: [{name:'3 Ply (Standard Duty)',price:150},{name:'5 Ply (Medium Duty)',price:210}],
@@ -880,7 +880,7 @@ function render(productsToRender){
     const basePrice = (p.baseConfig && p.baseConfig.length>0) ? p.baseConfig[0].price : (p.price || 0);
     const thumbSrc = (p.images && p.images.length>0) ? normalizeImageName(p.images[0]) : 'https://via.placeholder.com/400x300?text=No+Image';
     card.innerHTML = `
-      <div class="thumb"><img src="${thumbSrc}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/400x300?text=Image+Unavailable';"></div>
+      <div class="thumb"><img src="${thumbSrc}" alt="${escapeHtml(p.name)}" loading="lazy"></div>
       <div class="meta">
         <h3>${escapeHtml(p.name)}</h3>
         <div class="price">Starting at ₹ ${basePrice.toLocaleString('en-IN')}</div>
@@ -923,7 +923,6 @@ function openModal(product){
 
   // set main image
   modalImage.src = normalizeImageName(currentImages[currentIndex]) || 'https://via.placeholder.com/900x700?text=No+Image';
-  modalImage.onerror = ()=>{ modalImage.onerror=null; modalImage.src='https://via.placeholder.com/900x700?text=Image+Unavailable'; };
   populateThumbs();
 
   // info block under image
