@@ -77,7 +77,7 @@ p{color:var(--muted);margin:0 0 16px}
 
 /* logo */
 .logo{display:flex;align-items:center;gap:12px;text-decoration:none}
-.logo-img{width:100px;height:100px;object-fit:cover;border-radius:50%;background:transparent;padding:0;box-shadow:0 0 15px rgba(255,255,255,.5)}
+.logo-img{width:100px;height:100px;object-fit:cover;border-radius:50%;background:transparent;padding:0;box-shadow:0 0 15px rgba(26, 208, 41, 0.5)}
 .logo-text strong{font-size:1.3rem;color:#2c6e3f}
 .logo-text small{font-size:.8rem;color:#555;display:block}
 
@@ -102,7 +102,7 @@ p{color:var(--muted);margin:0 0 16px}
 
 @media (max-width:768px){
   .nav-toggle{display:inline-flex}
-  .nav-links{position:absolute;top:62px;right:0;left:0;margin:0 auto;max-width:320px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px;display:none;flex-direction:column;min-width:auto;z-index:100}
+  .nav-links{position:absolute;top:62px;right:0;left:0;margin:0 auto;max-width:320px;background:#23cb14;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px;display:none;flex-direction:column;min-width:auto;z-index:100}
   .nav-links.show{display:flex}
   .profile-dropdown{margin-left:0;width:32px;height:32px;flex-shrink:0;flex-basis:32px !important;}
   .profile-icon{width:32px !important;height:32px !important;max-width:32px !important;max-height:32px !important;min-width:32px !important;min-height:32px !important;line-height:0 !important;font-size:0 !important;}
