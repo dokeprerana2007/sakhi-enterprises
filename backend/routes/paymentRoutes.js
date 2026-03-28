@@ -15,7 +15,7 @@ const razorpay = new Razorpay({
 });
 
 // ✅ PLACE ORDER (COD or ONLINE)
-router.post("/api/place-order", authMiddleware, async (req, res) => {
+router.post("/place-order", authMiddleware, async (req, res) => {
   try {
     const { paymentMethod, address, items, totalAmount } = req.body;
     const userId = req.user.id;
@@ -109,7 +109,7 @@ router.post("/api/place-order", authMiddleware, async (req, res) => {
 });
 
 // ✅ VERIFY ONLINE PAYMENT
-router.post("/api/verify-payment", authMiddleware, async (req, res) => {
+router.post("/verify-payment", authMiddleware, async (req, res) => {
   try {
     const { orderId, razorpayPaymentId, razorpaySignature } = req.body;
 

@@ -170,10 +170,13 @@ let checkoutData = {};
 async function loadCheckout() {
   console.log("Checkout loaded");
 
-  const checkoutType = sessionStorage.getItem("checkoutType") || "CART_CHECKOUT";
-  console.log("Checkout Type:", checkoutType);
+  const params = new URLSearchParams(window.location.search);
+  const itemId = params.get("itemId");
 
-  // ✅ DIRECT ORDER (Single Product)
+  const checkoutType = sessionStorage.getItem("checkoutType") || "CART_CHECKOUT";
+  console.log("Checkout Type:", checkoutType, "itemId:", itemId);
+
+  // ✅ DIRECT ORDER (Single Product from Product page)
   if (checkoutType === "DIRECT_ORDER") {
     const directOrder = sessionStorage.getItem("directOrder");
     if (!directOrder) {
@@ -201,6 +204,48 @@ async function loadCheckout() {
 
     await loadAddress();
     return;
+  }
+
+  // ✅ CART ITEM CHECKOUT (explicit itemId parameter)
+  if (itemId) {
+    try {
+      const res = await fetch(`${BACKEND}/cart/${itemId}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+      });
+
+      if (!res.ok) {
+        throw new Error(`Item fetch error: ${res.status}`);
+      }
+
+      const item = await res.json();
+      checkoutData.items = [item];
+      checkoutData.total = item.price * item.quantity;
+
+      document.getElementById("summary-items").innerHTML = `
+        <div class="summary-item">
+          <div>
+            <strong>${item.name}</strong><br>
+            Qty: ${item.quantity}
+          </div>
+          <strong>₹${item.price * item.quantity}</strong>
+        </div>
+      `;
+      document.getElementById("summary-total").textContent = "₹" + checkoutData.total;
+      document.getElementById("payBtn").textContent = "Place Order - ₹" + checkoutData.total;
+
+      await loadAddress();
+      return;
+
+    } catch (err) {
+      console.error("Item checkout loading error:", err);
+      alert("Failed to load selected item: " + err.message);
+      window.location.href = "cart.html";
+      return;
+    }
   }
 
   // ✅ CART CHECKOUT (Multiple Products)
