@@ -140,21 +140,7 @@ h2{margin-top:0;color:var(--green);}
       <span id="summary-total">₹0</span>
     </div>
 
-    <h2 style="margin-top:30px;">Payment Method</h2>
-    <div style="background:var(--light);padding:20px;border-radius:8px;">
-      <label style="display:flex;align-items:center;margin-bottom:15px;cursor:pointer;">
-        <input type="radio" name="paymentMethod" value="ONLINE" checked style="margin-right:10px;width:18px;height:18px;cursor:pointer;">
-        <span><strong>💳 Pay Online (Razorpay)</strong></span>
-      </label>
-      <p style="margin:0 0 15px 28px;font-size:13px;color:#666;">Instant payment, secure & fast. Credit/Debit cards, UPI, Wallets.</p>
-      <label style="display:flex;align-items:center;cursor:pointer;">
-        <input type="radio" name="paymentMethod" value="COD" style="margin-right:10px;width:18px;height:18px;cursor:pointer;">
-        <span><strong>🚚 Cash on Delivery</strong></span>
-      </label>
-      <p style="margin:0 0 0 28px;font-size:13px;color:#666;">Pay when you receive your order. No prepayment needed.</p>
-    </div>
-
-    <button id="payBtn" class="btn">Place Order - ₹0</button>
+    <button id="payBtn" class="btn">Pay ₹0</button>
 
   </div>
 </div>
@@ -173,57 +159,18 @@ async function loadCheckout() {
   const params = new URLSearchParams(window.location.search);
   const itemId = params.get("itemId");
 
-  const checkoutType = sessionStorage.getItem("checkoutType") || "CART_CHECKOUT";
-  console.log("Checkout Type:", checkoutType, "itemId:", itemId);
-
-  // ✅ preserved checkout items (add more products flow)
-  const bufferedItems = sessionStorage.getItem("checkoutItems");
-  if (bufferedItems) {
-    try {
-      const items = JSON.parse(bufferedItems);
-      if (Array.isArray(items) && items.length > 0) {
-        checkoutData.items = items;
-        let total = 0;
-        let html = "";
-
-        items.forEach((item) => {
-          const itemTotal = item.price * item.quantity;
-          total += itemTotal;
-          html += `
-            <div class="summary-item">
-              <div>
-                <strong>${item.name}</strong><br>
-                Qty: ${item.quantity}
-              </div>
-              <strong>₹${itemTotal.toLocaleString("en-IN")}</strong>
-            </div>
-          `;
-        });
-
-        document.getElementById("summary-items").innerHTML = html;
-        document.getElementById("summary-total").textContent = "₹" + total.toLocaleString("en-IN");
-        document.getElementById("payBtn").textContent = "Place Order - ₹" + total.toLocaleString("en-IN");
-
-        checkoutData.total = total;
-
-        await loadAddress();
-        return;
+  // SINGLE ITEM
+  if (itemId) {
+    const res = await fetch(`${BACKEND}/cart/${itemId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("token")
       }
-    } catch (e) {
-      console.warn("Failed to parse checkoutItems", e);
-    }
-  }
+    });
 
-  // ✅ DIRECT ORDER (Single Product from Product page)
-  if (checkoutType === "DIRECT_ORDER") {
-    const directOrder = sessionStorage.getItem("directOrder");
-    if (!directOrder) {
-      alert("No product selected. Redirecting to products...");
-      window.location.href = "product.html";
-      return;
-    }
+    const item = await res.json();
 
-    const item = JSON.parse(directOrder);
     checkoutData.items = [item];
     checkoutData.total = item.price * item.quantity;
 
@@ -238,115 +185,53 @@ async function loadCheckout() {
     `;
 
     document.getElementById("summary-total").textContent = "₹" + checkoutData.total;
-    document.getElementById("payBtn").textContent = "Place Order - ₹" + checkoutData.total;
+    document.getElementById("payBtn").textContent = "Pay ₹" + checkoutData.total;
 
     await loadAddress();
     return;
   }
 
-  // ✅ CART ITEM CHECKOUT (explicit itemId parameter)
-  if (itemId) {
-    try {
-      const res = await fetch(`${BACKEND}/cart/${itemId}`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Authorization": "Bearer " + localStorage.getItem("token")
-        }
-      });
-
-      if (!res.ok) {
-        throw new Error(`Item fetch error: ${res.status}`);
+  // FULL CART
+  try {
+    const res = await fetch(`${BACKEND}/cart`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("token")
       }
+    });
 
-      const item = await res.json();
-      checkoutData.items = [item];
-      checkoutData.total = item.price * item.quantity;
+    const data = await res.json();
 
-      document.getElementById("summary-items").innerHTML = `
+    let html = "";
+    let total = 0;
+
+    data.forEach(item => {
+      total += item.price * item.quantity;
+      html += `
         <div class="summary-item">
           <div>
-            <strong>${item.name}</strong><br>
+            <strong>${item.name}</strong>
             Qty: ${item.quantity}
           </div>
           <strong>₹${item.price * item.quantity}</strong>
         </div>
       `;
-      document.getElementById("summary-total").textContent = "₹" + checkoutData.total;
-      document.getElementById("payBtn").textContent = "Place Order - ₹" + checkoutData.total;
+    });
 
-      await loadAddress();
-      return;
+    document.getElementById("summary-items").innerHTML = html;
+    document.getElementById("summary-total").textContent = "₹" + total;
+    document.getElementById("payBtn").textContent = "Pay ₹" + total;
 
-    } catch (err) {
-      console.error("Item checkout loading error:", err);
-      alert("Failed to load selected item: " + err.message);
-      window.location.href = "cart.html";
-      return;
-    }
+    checkoutData.total = total;
+    checkoutData.items = data;
+
+    await loadAddress();
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load cart");
   }
-
-  // ✅ CART CHECKOUT (Multiple Products)
-  if (checkoutType === "CART_CHECKOUT") {
-    try {
-      const res = await fetch(`${BACKEND}/cart`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Authorization": "Bearer " + localStorage.getItem("token")
-        }
-      });
-
-      if (!res.ok) {
-        throw new Error(`API error: ${res.status}`);
-      }
-
-      const data = await res.json();
-      console.log("Cart items received:", data.length, "items");
-
-      if (!data || !Array.isArray(data) || data.length === 0) {
-        alert("Your cart is empty!");
-        window.location.href = "product.html";
-        return;
-      }
-
-      let html = "";
-      let total = 0;
-
-      data.forEach(item => {
-        const itemTotal = item.price * item.quantity;
-        total += itemTotal;
-        html += `
-          <div class="summary-item">
-            <div>
-              <strong>${item.name}</strong><br>
-              Qty: ${item.quantity}
-            </div>
-            <strong>₹${itemTotal.toLocaleString("en-IN")}</strong>
-          </div>
-        `;
-      });
-
-      document.getElementById("summary-items").innerHTML = html;
-      document.getElementById("summary-total").textContent = "₹" + total.toLocaleString("en-IN");
-      document.getElementById("payBtn").textContent = "Place Order - ₹" + total.toLocaleString("en-IN");
-
-      checkoutData.total = total;
-      checkoutData.items = data;
-
-      await loadAddress();
-
-    } catch (err) {
-      console.error("Cart loading error:", err);
-      alert("Failed to load cart: " + err.message);
-      window.location.href = "product.html";
-    }
-    return;
-  }
-
-  // Default fallback (shouldn't reach here)
-  alert("Invalid checkout type");
-  window.location.href = "product.html";
 }
 
 // ================= LOAD ADDRESS =================
@@ -380,142 +265,57 @@ async function loadAddress() {
 document.addEventListener("DOMContentLoaded", loadCheckout);
 
 // ================= PAYMENT =================
-
-// ✅ Prepare items for backend (add totalPrice if missing)
-function prepareItemsForOrder(items) {
-  return items.map(item => ({
-    name: item.name,
-    quantity: item.quantity,
-    totalPrice: item.totalPrice || (item.price * item.quantity),
-    image: item.image || "",
-    productId: item.productId || item._id || ""
-  }));
-}
-
 document.getElementById("payBtn").addEventListener("click", async () => {
+
   if (!checkoutData.total || checkoutData.total <= 0) {
     alert("Cart is empty");
     return;
   }
 
-  // Get selected payment method
-  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-  console.log("Selected payment method:", paymentMethod);
+  const orderRes = await fetch(`${BACKEND}/api/payment/create-order`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + localStorage.getItem("token")
+    },
+    body: JSON.stringify({ amount: checkoutData.total })
+  });
 
-  if (!checkoutData.address) {
-    alert("Please set delivery address first!");
-    return;
-  }
+  const order = await orderRes.json();
 
-  try {
-    // Prepare items with totalPrice
-    const preparedItems = prepareItemsForOrder(checkoutData.items);
+  const options = {
+    key: RAZORPAY_KEY,
+    amount: order.amount,
+    currency: "INR",
+    name: "Sakhi Enterprises",
+    order_id: order.id,
+    handler: async function (response) {
 
-    // ========== COD Flow ==========
-    if (paymentMethod === "COD") {
-      const res = await fetch(`${BACKEND}/api/place-order`, {
+      await fetch(`${BACKEND}/api/payment/verify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer " + localStorage.getItem("token")
+          Authorization: "Bearer " + localStorage.getItem("token")
         },
-        credentials: "include",
-        body: JSON.stringify({
-          paymentMethod: "COD",
-          address: checkoutData.address,
-          items: preparedItems,
-          totalAmount: checkoutData.total
-        })
+        body: JSON.stringify(response)
       });
 
-      const data = await res.json();
-      if (!data.success) {
-        alert("Error: " + (data.message || "Failed to place order"));
-        return;
-      }
-
-      alert("Order placed successfully with Cash on Delivery!");
-      sessionStorage.removeItem("checkoutItems");
-      sessionStorage.removeItem("checkoutType");
-      sessionStorage.removeItem("directOrder");
-      window.location.href = `success.html?orderId=${data.orderId}&method=COD`;
-      return;
-    }
-
-    // ========== ONLINE Payment Flow ==========
-    if (paymentMethod === "ONLINE") {
-      const res = await fetch(`${BACKEND}/api/place-order`, {
+      await fetch(`${BACKEND}/order/place`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + localStorage.getItem("token")
-        },
-        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          paymentMethod: "ONLINE",
-          address: checkoutData.address,
-          items: preparedItems,
-          totalAmount: checkoutData.total
+          items: checkoutData.items,
+          address: checkoutData.address
         })
       });
 
-      const orderData = await res.json();
-      if (!orderData.success) {
-        alert("Error: " + (orderData.message || "Failed to create order"));
-        return;
-      }
-
-      // Open Razorpay
-      const options = {
-        key: RAZORPAY_KEY,
-        amount: orderData.razorpayOrder.amount,
-        currency: orderData.razorpayOrder.currency,
-        name: "Sakhi Enterprises",
-        order_id: orderData.razorpayOrder.id,
-        handler: async function (response) {
-          // Verify payment
-          const verifyRes = await fetch(`${BACKEND}/api/verify-payment`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Bearer " + localStorage.getItem("token")
-            },
-            credentials: "include",
-            body: JSON.stringify({
-              orderId: orderData.orderId,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature
-            })
-          });
-
-          const verifyData = await verifyRes.json();
-          if (verifyData.success) {
-            alert("Payment successful! Order confirmed.");
-            sessionStorage.removeItem("checkoutItems");
-            sessionStorage.removeItem("checkoutType");
-            sessionStorage.removeItem("directOrder");
-            window.location.href = `success.html?orderId=${verifyData.orderId}&method=ONLINE`;
-          } else {
-            alert("Payment verification failed");
-          }
-        },
-        prefill: {
-          name: checkoutData.address.fullName,
-          email: "",
-          contact: ""
-        },
-        theme: {
-          color: "#2e7d32"
-        }
-      };
-
-      const rzp = new Razorpay(options);
-      rzp.open();
+      alert("Order Placed Successfully!");
+      window.location.href = "success.html";
     }
-  } catch (error) {
-    console.error("Checkout error:", error);
-    alert("Error during checkout: " + error.message);
-  }
+  };
+
+  const rzp = new Razorpay(options);
+  rzp.open();
 });
 
 // NAV
@@ -523,12 +323,6 @@ function changeAddress() {
   window.location.href = "/profile.html";
 }
 function goToShop() {
-  // Preserve current checkout items so new additions append instead of overwriting
-  if (checkoutData.items && checkoutData.items.length > 0) {
-    sessionStorage.setItem("checkoutItems", JSON.stringify(checkoutData.items));
-    sessionStorage.setItem("checkoutType", "DIRECT_ORDER");
-  }
-
   window.location.href = "product.html";
 }
 </script>
