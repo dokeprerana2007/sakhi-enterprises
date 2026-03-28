@@ -1,0 +1,181 @@
+classDiagram
+  direction TB
+
+  class User {
+    -String id
+    -String username
+    -String email
+    -String password
+    -String phone
+    -String address
+    -String city
+    -String state
+    -String postCode
+    -Date createdAt
+    +signup()
+    +login()
+    +profile()
+    +logout()
+    +forgotPassword()
+  }
+
+  class Admin {
+    -String id
+    -String name
+    -String email
+    -String password
+    -String role
+    -Date createdAt
+    +comparePassword()
+    +login()
+    +dashboard()
+    +importStaticProducts()
+  }
+
+  class Product {
+    -String id
+    -String name
+    -Number price
+    -String description
+    -String category
+    -String image
+    -String[] images
+    -Number stock
+    -Boolean isActive
+    -Date createdAt
+    +getProducts()
+    +getProductById()
+    +addProduct()
+    +updateProduct()
+    +deleteProduct()
+  }
+
+  class Cart {
+    -String id
+    -ObjectId user
+    -String productId
+    -String name
+    -Number price
+    -Number quantity
+    -String image
+    -Date createdAt
+    +addToCart()
+    +getCartForUser()
+    +updateCartItem()
+    +removeCartItem()
+  }
+
+  class Order {
+    -String id
+    -ObjectId user
+    -Item[] items
+    -Address address
+    -Number totalAmount
+    -String status
+    -Date createdAt
+    +createOrder()
+    +getOrders()
+    +updateOrderStatus()
+    +cancelOrder()
+  }
+
+  class Item {
+    -String id
+    -String productName
+    -Number unitPrice
+    -Number quantity
+    -Number totalPrice
+    -String status
+    -StatusHistory[] statusHistory
+    +calculateTotal()
+    +setStatus()
+  }
+
+  class Address {
+    -String id
+    -String fullName
+    -String street
+    -String city
+    -String state
+    -String pincode
+    -String country
+    -String phone
+    +formatAddress()
+    +validatePostalCode()
+  }
+
+  class StatusHistory {
+    -String id
+    -String prevStatus
+    -String newStatus
+    -Date updatedAt
+    -String updatedBy
+    +recordUpdate()
+    +getReadableLabel()
+  }
+
+  class Variant {
+    -String id
+    -String label
+    -Number additionalPrice
+    -String sku
+    +isAvailable()
+    +applyToPrice()
+  }
+
+  class ExtraOption {
+    -String id
+    -String label
+    -Number priceModifier
+    -String description
+    +computeOptionPrice()
+    +isRequired()
+  }
+
+  class Profile {
+    -String id
+    -ObjectId userId
+    -String username
+    -String phone
+    -Address address
+    -Date createdAt
+    +getProfile()
+    +updateAddress()
+  }
+
+  class Contact {
+    -String id
+    -String name
+    -String email
+    -String phone
+    -String message
+    -Date createdAt
+    +saveContact()
+    +getAllContacts()
+  }
+
+  class Payment {
+    -String id
+    -ObjectId userId
+    -String orderId
+    -String paymentId
+    -String signature
+    -Number amount
+    -String status
+    -Date createdAt
+    +createPaymentOrder()
+    +verifyPayment()
+  }
+
+  User "1" --> "*" Cart : owns
+  User "1" --> "*" Order : places
+  User "1" --> "1" Profile : owns
+  User "1" --> "*" Payment : makes
+
+  Order "1" --> "*" Item : contains
+  Item "1" --> "*" StatusHistory : tracks
+  Order "1" --> "1" Address : ships to
+  Profile "1" --> "1" Address : has default
+
+  Product "1" --> "*" Variant : has variants
+  Product "1" --> "*" ExtraOption : has options

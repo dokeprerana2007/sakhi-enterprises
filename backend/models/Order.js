@@ -62,9 +62,31 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  
+  // ✅ PAYMENT METHOD
+  paymentMethod: {
+    type: String,
+    enum: ["ONLINE", "COD"],
+    default: "ONLINE"
+  },
+  
+  // ✅ PAYMENT STATUS
+  paymentStatus: {
+    type: String,
+    enum: ["PENDING", "PAID", "FAILED"],
+    default: "PENDING"
+  },
+  
+  // ✅ RAZORPAY REFERENCE (for online payments)
+  razorpayOrderId: String,
+  razorpayPaymentId: String,
+  razorpaySignature: String,
+  
+  // ✅ ORDER STATUS
   status: {
     type: String,
-    default: "Placed"
+    enum: ["PLACED", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
+    default: "PLACED"
   }
 }, { timestamps: true });
 

@@ -207,9 +207,28 @@ p{
   
   <div class="success-circle">✓</div>
 
-  <h1>Order Placed Successfully!</h1>
-  <p>Thank you for shopping with <b>Sakhi Enterprises</b>.<br>
+  <h1 id="successTitle">Order Placed Successfully!</h1>
+  <p id="successMessage">Thank you for shopping with <b>Sakhi Enterprises</b>.<br>
   Your order has been placed successfully.</p>
+  
+  <!-- Order Details -->
+  <div style="background:#f1f8e9;padding:16px;border-radius:8px;margin-bottom:20px;text-align:left;">
+    <p style="margin:0 0 12px 0;font-size:13px;color:#555;">
+      <strong>Order ID:</strong> 
+      <span id="orderId" style="font-family:monospace;color:#1b5e20;font-weight:700;">---</span>
+    </p>
+    <p style="margin:0;font-size:13px;color:#555;">
+      <strong>Payment Method:</strong> 
+      <span id="paymentMethod" style="color:#1b5e20;font-weight:700;">---</span>
+    </p>
+    <p id="codNote" style="margin:12px 0 0 0;font-size:13px;color:#d32f2f;font-weight:600;display:none;">
+      ⚠️ Please keep ₹ ready for payment on delivery.
+    </p>
+  </div>
+
+  <button class="btn btn-primary" onclick="goToTrack()">
+    Track Your Order
+  </button>
 
   <button class="btn btn-primary" onclick="goToOrders()">
     View My Orders
@@ -222,14 +241,42 @@ p{
 </div>
 
 <script>
+const BACKEND = window.location.origin;
+
+// Get order details from URL
+const params = new URLSearchParams(window.location.search);
+const orderId = params.get('orderId');
+const paymentMethod = params.get('method') || 'ONLINE';
+
+// Display order details
+if (orderId) {
+  document.getElementById('orderId').textContent = orderId;
+} else {
+  document.getElementById('orderId').textContent = 'Order ID not found';
+}
+
+// Show payment method specific message
+if (paymentMethod === 'COD') {
+  document.getElementById('successMessage').innerHTML = 
+    'Thank you for shopping with <b>Sakhi Enterprises</b>.<br>' +
+    'Your order has been placed successfully with <b>Cash on Delivery</b>.<br>' +
+    'Our team will contact you soon with delivery details.';
+  document.getElementById('paymentMethod').textContent = 'Cash on Delivery (COD)';
+  document.getElementById('codNote').style.display = 'block';
+} else {
+  document.getElementById('paymentMethod').textContent = 'Online Payment (Razorpay)';
+}
+
+function goToTrack(){
+  window.location.href = `ordertrack.html?orderId=${orderId}`; 
+}
+
 function goToOrders(){
   window.location.href = "myorders.html"; 
-  // change path if your orders page path is different
 }
 
 function goToProducts(){
   window.location.href = "product.html"; 
-  // change path if your product page path is different
 }
 </script>
 

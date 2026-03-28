@@ -1,2 +1,0 @@
-# sakhi-Enterprises-fullstackproject
-website

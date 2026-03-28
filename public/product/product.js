@@ -8,6 +8,13 @@ function normalizeImageName(src){
   return `/product/${safe}`;
 }
 
+function getImageFallbackSources(src){
+  const primary = normalizeImageName(src);
+  const lower = normalizeImageName((src || '').toString().trim().toLowerCase());
+  const noBrackets = normalizeImageName((src || '').toString().trim().replace(/\s*\([^)]*\)/g, '').trim());
+  return { primary, lower, noBrackets };
+}
+
 let products = [
   {
     name:'Premium White Mailer Boxes',
@@ -878,9 +885,14 @@ function render(productsToRender){
     const card = document.createElement('div');
     card.className = 'card';
     const basePrice = (p.baseConfig && p.baseConfig.length>0) ? p.baseConfig[0].price : (p.price || 0);
-    const thumbSrc = (p.images && p.images.length>0) ? normalizeImageName(p.images[0]) : 'https://via.placeholder.com/400x300?text=No+Image';
+    const imgSources = (p.images && p.images.length>0) ? getImageFallbackSources(p.images[0]) : null;
+    const thumbSrc = imgSources ? imgSources.primary : 'https://via.placeholder.com/400x300?text=No+Image';
+    const thumbLower = imgSources ? imgSources.lower : 'https://via.placeholder.com/400x300?text=No+Image';
+    const thumbNoBrackets = imgSources ? imgSources.noBrackets : 'https://via.placeholder.com/400x300?text=No+Image';
+
     card.innerHTML = `
-      <div class="thumb"><img src="${thumbSrc}" alt="${escapeHtml(p.name)}" loading="lazy"></div>
+      <div class="thumb"><img src="${thumbSrc}" alt="${escapeHtml(p.name)}" loading="lazy"
+        onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src='${thumbLower}';}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src='${thumbNoBrackets}';}else{this.src='https://via.placeholder.com/400x300?text=No+Image';}" /></div>
       <div class="meta">
         <h3>${escapeHtml(p.name)}</h3>
         <div class="price">Starting at ₹ ${basePrice.toLocaleString('en-IN')}</div>
@@ -916,13 +928,32 @@ function filterAndRender(){
 }
 
 /* ---------- Modal open/close ---------- */
+function setModalImage(index){
+  if(!currentImages || !currentImages.length) return;
+  currentIndex = (index + currentImages.length) % currentImages.length;
+
+  const mainImages = getImageFallbackSources(currentImages[currentIndex]);
+  modalImage.dataset.tried = '';
+  modalImage.src = mainImages.primary || 'https://via.placeholder.com/900x700?text=No+Image';
+  modalImage.onerror = function(){
+    if(!this.dataset.tried){
+      this.dataset.tried='1';
+      this.src = mainImages.lower;
+    } else if(this.dataset.tried==='1'){
+      this.dataset.tried='2';
+      this.src = mainImages.noBrackets;
+    } else {
+      this.src = 'https://via.placeholder.com/900x700?text=No+Image';
+    }
+  };
+}
+
 function openModal(product){
   currentProduct = product;
   currentImages = product.images.slice();
   currentIndex = 0;
 
-  // set main image
-  modalImage.src = normalizeImageName(currentImages[currentIndex]) || 'https://via.placeholder.com/900x700?text=No+Image';
+  setModalImage(0);
   populateThumbs();
 
   // info block under image
@@ -972,16 +1003,14 @@ function keyHandler(e){
 /* ---------- Carousel ---------- */
 function showPrev(){
   if(!currentImages.length) return;
-  currentIndex=(currentIndex-1+currentImages.length)%currentImages.length;
-  modalImage.src=normalizeImageName(currentImages[currentIndex]);
+  setModalImage(currentIndex - 1);
   highlightActiveThumb();
 }
 prevBtn.addEventListener('click', showPrev);
 
 function showNext(){
   if(!currentImages.length) return;
-  currentIndex=(currentIndex+1)%currentImages.length;
-  modalImage.src=normalizeImageName(currentImages[currentIndex]);
+  setModalImage(currentIndex + 1);
   highlightActiveThumb();
 }
 nextBtn.addEventListener('click', showNext);
@@ -994,8 +1023,15 @@ function populateThumbs(){
     item.className = 'thumb-item';
     item.setAttribute('role', 'button');
     item.setAttribute('aria-label', `View image ${index+1}`);
-    item.onclick = ()=>setMainImage(index);
-    item.innerHTML = `<img src="${normalizeImageName(img)}" alt="Thumbnail ${index+1}" />`;
+    item.onclick = ()=>setModalImage(index);
+    
+    const thumbImages = getImageFallbackSources(img);
+    const thumbSrc = thumbImages.primary;
+    const thumbLower = thumbImages.lower;
+    const thumbNoBrackets = thumbImages.noBrackets;
+    
+    item.innerHTML = `<img src="${thumbSrc}" alt="Thumbnail ${index+1}" 
+      onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src='${thumbLower}';}else if(this.dataset.tried==='1'){this.dataset.tried='2';this.src='${thumbNoBrackets}';}else{this.src='https://via.placeholder.com/120x120?text=No+Img';}" />`;
     modalThumbs.appendChild(item);
   });
   highlightActiveThumb();
@@ -1008,8 +1044,7 @@ function highlightActiveThumb(){
 }
 
 function setMainImage(index){
-  currentIndex = index;
-  modalImage.src = currentImages[currentIndex];
+  setModalImage(index);
   highlightActiveThumb();
 }
 
@@ -1196,7 +1231,12 @@ orderNowBtn.addEventListener("click", () => {
   const item = getCurrentProductConfiguration();
   if (!item) return;
 
-  // ✅ Save only for checkout (NOT cart)
+  // ✅ CLEAR any previous checkout data
+  sessionStorage.removeItem("checkoutType");
+  sessionStorage.removeItem("directOrder");
+  localStorage.removeItem("checkoutType");
+
+  // ✅ Save single product for direct checkout
   sessionStorage.setItem("directOrder", JSON.stringify({
     productId: item.id,
     name: item.name,
@@ -1204,6 +1244,9 @@ orderNowBtn.addEventListener("click", () => {
     quantity: item.quantity,
     image: currentImages[0]
   }));
+
+  // ✅ Flag this as direct/single-product checkout
+  sessionStorage.setItem("checkoutType", "DIRECT_ORDER");
 
   // Go to checkout
   window.location.href = "/checkout.html";

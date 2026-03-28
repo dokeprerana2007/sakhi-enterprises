@@ -291,7 +291,7 @@ function renderCart(){
   /* ✅ Single Checkout Button Below Total */
   checkoutSection.innerHTML = `
     <button class="action-btn checkout-btn"
-      onclick="window.location.href='checkout.html'">
+      onclick="proceedToCartCheckout()">
       Proceed to Checkout
     </button>
   `;
@@ -328,6 +328,14 @@ async function removeItem(id) {
 }
 function orderSingle(id){
   window.location.href = `checkout.html?itemId=${id}`;
+}
+
+// ✅ CART CHECKOUT - properly flag cart flow
+function proceedToCartCheckout(){
+  sessionStorage.removeItem("directOrder");
+  sessionStorage.removeItem("checkoutType");
+  sessionStorage.setItem("checkoutType", "CART_CHECKOUT");
+  window.location.href = "checkout.html";
 }
 /* 🚀 INIT */
 checkLogin();

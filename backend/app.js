@@ -7,6 +7,7 @@ import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import checkoutRoutes from "./routes/checkoutRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
@@ -53,6 +54,7 @@ app.use(cartRoutes);
 app.use(orderRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/checkout", checkoutRoutes);
+app.use("/api", paymentRoutes);
 app.use(adminRoutes);
 app.use(productRoutes);
 

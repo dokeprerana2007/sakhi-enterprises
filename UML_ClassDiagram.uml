@@ -1,0 +1,163 @@
+@startuml Sakhi_Enterprises_UML
+
+!theme plain
+skinparam classBackgroundColor #FEFEFE
+skinparam classBorderColor #333333
+skinparam arrowColor #333333
+
+class User {
+  - id: String
+  - username: String
+  - email: String (unique)
+  - password: String
+  - phone: String
+  - address: String
+  - visit_reason: String
+  - createdAt: Date
+  - updatedAt: Date
+}
+
+class Admin {
+  - id: String
+  - name: String
+  - email: String (unique)
+  - password: String
+  - role: String = "admin"
+  + comparePassword(candidate): Boolean
+  - createdAt: Date
+  - updatedAt: Date
+}
+
+class Product {
+  - id: String
+  - name: String (required)
+  - price: Number
+  - image: String
+  - description: String
+  - slug: String (unique)
+  - shortDescription: String
+  - category: String
+  - subCategory: String
+  - materialType: String
+  - images: String[]
+  - baseVariants: Variant[]
+  - extraOptions: ExtraOption[]
+  - isCustomizable: Boolean = false
+  - minOrderQty: Number = 1
+  - stock: Number = 0
+  - isActive: Boolean = true
+  - createdAt: Date
+}
+
+class Variant {
+  - label: String
+  - price: Number
+  - sku: String
+}
+
+class ExtraOption {
+  - label: String
+  - priceModifier: Number
+}
+
+class Cart {
+  - id: String
+  - user: ObjectId (ref: User)
+  - productId: String
+  - name: String
+  - price: Number
+  - quantity: Number
+  - image: String
+  - createdAt: Date
+  - updatedAt: Date
+}
+
+class Order {
+  - id: String
+  - user: ObjectId (ref: User)
+  - items: Item[]
+  - address: Address
+  - totalAmount: Number
+  - status: String = "Placed"
+  - createdAt: Date
+  - updatedAt: Date
+}
+
+class Item {
+  - name: String
+  - quantity: Number
+  - totalPrice: Number
+  - image: String
+  - status: String = "CONFIRMED"
+  - statusHistory: StatusHistory[]
+  - cancelReason: String
+  - orderDate: Date
+  - statusUpdatedAt: Date
+}
+
+class StatusHistory {
+  - status: String
+  - updatedAt: Date
+  - updatedBy: String
+}
+
+class Address {
+  - fullName: String
+  - street: String
+  - city: String
+  - state: String
+  - pincode: String
+  - country: String
+  - updatedAt: Date
+}
+
+class Profile {
+  - id: String
+  - userId: ObjectId (ref: User)
+  - address: Address
+  - cart: Array
+  - orders: Array
+  - createdAt: Date
+  - updatedAt: Date
+}
+
+class Contact {
+  - id: String
+  - name: String
+  - email: String
+  - phone: String
+  - message: String
+  - createdAt: Date
+  - updatedAt: Date
+}
+
+class Payment {
+  - id: String
+  - userId: ObjectId (ref: User)
+  - orderId: String
+  - paymentId: String
+  - signature: String
+  - amount: Number
+  - status: String = "success"
+  - createdAt: Date
+}
+
+' Relationships
+User "1" --> "*" Cart : has
+User "1" --> "*" Order : places
+User "1" --> "1" Profile : owns
+User "1" --> "*" Payment : makes
+
+Cart "many" --> "1" Product : references
+
+Order "1" --> "*" Item : contains
+Item "1" --> "*" StatusHistory : tracks
+
+Order "1" --> "1" Address : ships_to
+
+Profile "1" --> "1" Address : has_default
+
+Product "1" --> "*" Variant : has_variants
+Product "1" --> "*" ExtraOption : has_options
+
+@enduml
