@@ -78,41 +78,6 @@ h2{margin-top:0;color:var(--green);}
   border:2px solid var(--green);
   margin-bottom:20px;
 }
-
-/* RESPONSIVE DESIGN */
-@media (max-width:768px){
-  header{padding:12px 16px;font-size:18px;}
-  .container{margin:20px 16px;}
-  .card{padding:16px;border-radius:8px;}
-  h2{font-size:18px;margin-top:0;margin-bottom:12px;}
-  .address-box{padding:12px;margin-bottom:8px;font-size:14px;}
-  .summary-item{gap:10px;margin-bottom:12px;}
-  .summary-total{font-size:18px;margin-top:16px;}
-  .btn{padding:12px;font-size:15px;margin-top:16px;}
-}
-
-@media (max-width:600px){
-  header{padding:10px 12px;font-size:16px;}
-  .container{margin:15px 12px;}
-  .card{padding:14px;border-radius:6px;}
-  h2{font-size:16px;margin-bottom:10px;}
-  .address-box{padding:10px;font-size:13px;line-height:1.4;}
-  .summary-item{font-size:13px;gap:8px;}
-  .summary-total{font-size:16px;margin-top:12px;}
-  .btn{padding:10px;font-size:14px;margin-top:12px;}
-}
-
-@media (max-width:480px){
-  header{padding:8px 10px;font-size:14px;}
-  .container{margin:10px 8px;}
-  .card{padding:10px;border:none;box-shadow:none;}
-  h2{font-size:14px;margin-bottom:8px;}
-  .address-box{padding:8px;font-size:12px;line-height:1.3;border-radius:4px;}
-  .summary-item{font-size:12px;gap:6px;margin-bottom:8px;}
-  .summary-total{font-size:14px;gap:10px;margin-top:10px;}
-  .btn{padding:8px;font-size:12px;margin-top:10px;}
-  input,select{font-size:14px!important;-webkit-appearance:none;}
-}
 </style>
 </head>
 
@@ -128,9 +93,15 @@ h2{margin-top:0;color:var(--green);}
       Loading address...
     </div>
 
-    <button class="btn change-btn" onclick="changeAddress()">Change Address</button>
+    <button class="btn change-btn" onclick="changeAddress()">
+      Change Address
+    </button>
+
     <hr>
-    <button class="btn change-btn" onclick="goToShop()">➕ Add More Products</button>
+
+    <button class="btn change-btn" onclick="goToShop()">
+      ➕ Add More Products
+    </button>
 
     <h2>Order Summary</h2>
     <div id="summary-items"></div>
@@ -140,21 +111,9 @@ h2{margin-top:0;color:var(--green);}
       <span id="summary-total">₹0</span>
     </div>
 
-    <h2 style="margin-top:30px;">Payment Method</h2>
-    <div style="background:var(--light);padding:20px;border-radius:8px;">
-      <label style="display:flex;align-items:center;margin-bottom:15px;cursor:pointer;">
-        <input type="radio" name="paymentMethod" value="ONLINE" checked style="margin-right:10px;width:18px;height:18px;cursor:pointer;">
-        <span><strong>💳 Pay Online (Razorpay)</strong></span>
-      </label>
-      <p style="margin:0 0 15px 28px;font-size:13px;color:#666;">Instant payment, secure & fast. Credit/Debit cards, UPI, Wallets.</p>
-      <label style="display:flex;align-items:center;cursor:pointer;">
-        <input type="radio" name="paymentMethod" value="COD" style="margin-right:10px;width:18px;height:18px;cursor:pointer;">
-        <span><strong>🚚 Cash on Delivery</strong></span>
-      </label>
-      <p style="margin:0 0 0 28px;font-size:13px;color:#666;">Pay when you receive your order. No prepayment needed.</p>
-    </div>
-
-    <button id="payBtn" class="btn">Place Order - ₹0</button>
+    <button id="payBtn" class="btn">
+      Pay ₹0
+    </button>
 
   </div>
 </div>
@@ -162,66 +121,34 @@ h2{margin-top:0;color:var(--green);}
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
+
 const RAZORPAY_KEY = "rzp_test_S8l9sAf2Mc1cyv";
-const BACKEND = window.location.origin;
+const BACKEND = "http://localhost:3000";
+
 let checkoutData = {};
 
-// ================= LOAD CHECKOUT =================
-async function loadCheckout() {
-  console.log("Checkout loaded");
+/* ================= LOAD CHECKOUT ================= */
 
+async function loadCheckout() {
+
+
+    // ✅ SINGLE ITEM CHECKOUT FROM CART
   const params = new URLSearchParams(window.location.search);
   const itemId = params.get("itemId");
 
-  const checkoutType = sessionStorage.getItem("checkoutType") || "CART_CHECKOUT";
-  console.log("Checkout Type:", checkoutType, "itemId:", itemId);
-
-  // ✅ DIRECT ORDER (Single Product from Product page)
-  if (checkoutType === "DIRECT_ORDER") {
-    const directOrder = sessionStorage.getItem("directOrder");
-    if (!directOrder) {
-      alert("No product selected. Redirecting to products...");
-      window.location.href = "product.html";
-      return;
-    }
-
-    const item = JSON.parse(directOrder);
-    checkoutData.items = [item];
-    checkoutData.total = item.price * item.quantity;
-
-    document.getElementById("summary-items").innerHTML = `
-      <div class="summary-item">
-        <div>
-          <strong>${item.name}</strong><br>
-          Qty: ${item.quantity}
-        </div>
-        <strong>₹${item.price * item.quantity}</strong>
-      </div>
-    `;
-
-    document.getElementById("summary-total").textContent = "₹" + checkoutData.total;
-    document.getElementById("payBtn").textContent = "Place Order - ₹" + checkoutData.total;
-
-    await loadAddress();
-    return;
-  }
-
-  // ✅ CART ITEM CHECKOUT (explicit itemId parameter)
   if (itemId) {
     try {
       const res = await fetch(`${BACKEND}/cart/${itemId}`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Authorization": "Bearer " + localStorage.getItem("token")
-        }
+        credentials: "include"
       });
 
       if (!res.ok) {
-        throw new Error(`Item fetch error: ${res.status}`);
+        alert("Item not found");
+        return;
       }
 
       const item = await res.json();
+
       checkoutData.items = [item];
       checkoutData.total = item.price * item.quantity;
 
@@ -234,241 +161,299 @@ async function loadCheckout() {
           <strong>₹${item.price * item.quantity}</strong>
         </div>
       `;
-      document.getElementById("summary-total").textContent = "₹" + checkoutData.total;
-      document.getElementById("payBtn").textContent = "Place Order - ₹" + checkoutData.total;
+
+      document.getElementById("summary-total").textContent =
+        "₹" + checkoutData.total;
+
+      document.getElementById("payBtn").textContent =
+        "Pay ₹" + checkoutData.total;
 
       await loadAddress();
-      return;
-
+      return;   // 🚨 VERY IMPORTANT
     } catch (err) {
-      console.error("Item checkout loading error:", err);
-      alert("Failed to load selected item: " + err.message);
-      window.location.href = "cart.html";
+      console.error(err);
+      alert("Failed to load item");
       return;
     }
   }
 
-  // ✅ CART CHECKOUT (Multiple Products)
-  if (checkoutType === "CART_CHECKOUT") {
-    try {
-      const res = await fetch(`${BACKEND}/cart`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Authorization": "Bearer " + localStorage.getItem("token")
-        }
-      });
+  const directOrder = sessionStorage.getItem("directOrder");
 
-      if (!res.ok) {
-        throw new Error(`API error: ${res.status}`);
-      }
+  // ✅ FIX START (merge instead of replace)
+  if (directOrder) {
 
-      const data = await res.json();
-      console.log("Cart items received:", data.length, "items");
+    const item = JSON.parse(directOrder);
 
-      if (!data || !Array.isArray(data) || data.length === 0) {
-        alert("Your cart is empty!");
-        window.location.href = "product.html";
-        return;
-      }
+    let existingOrders = JSON.parse(sessionStorage.getItem("directOrders")) || [];
 
-      let html = "";
-      let total = 0;
+    existingOrders.push(item);
+
+    sessionStorage.setItem("directOrders", JSON.stringify(existingOrders));
+    sessionStorage.removeItem("directOrder");
+  }
+
+  const allDirectOrders = JSON.parse(sessionStorage.getItem("directOrders")) || [];
+
+  if (allDirectOrders.length > 0) {
+
+    checkoutData.items = allDirectOrders;
+
+    let total = 0;
+    let html = "";
+
+    allDirectOrders.forEach(item => {
+
+      total += item.price * item.quantity;
+
+      html += `
+        <div class="summary-item">
+          <div>
+            <strong>${item.name}</strong><br>
+            Qty: ${item.quantity}
+          </div>
+          <strong>₹${item.price * item.quantity}</strong>
+        </div>
+      `;
+    });
+
+    checkoutData.total = total;
+
+    document.getElementById("summary-items").innerHTML = html;
+    document.getElementById("summary-total").textContent = "₹" + total;
+    document.getElementById("payBtn").textContent = "Pay ₹" + total;
+
+    await loadAddress();
+    return;
+  }
+  // ✅ FIX END
+
+
+  // ================= CART (UNCHANGED) =================
+
+  try {
+
+    const res = await fetch(`${BACKEND}/cart`, {
+  credentials: "include"
+});
+    if (!res.ok) {
+      alert("Please login again");
+      return;
+    }
+
+    const data = await res.json();
+
+    checkoutData = data;
+
+    let html = "";
+    let total = 0;
+
+    if (!data || data.length === 0) {
+
+      html = "<p>Your cart is empty.</p>";
+
+    } else {
 
       data.forEach(item => {
-        const itemTotal = item.price * item.quantity;
-        total += itemTotal;
+
+        total += item.price * item.quantity;
+
         html += `
           <div class="summary-item">
             <div>
-              <strong>${item.name}</strong><br>
+             <strong>${item.name}</strong>
               Qty: ${item.quantity}
             </div>
-            <strong>₹${itemTotal.toLocaleString("en-IN")}</strong>
+            <strong>₹${item.price * item.quantity}</strong>
           </div>
         `;
       });
-
-      document.getElementById("summary-items").innerHTML = html;
-      document.getElementById("summary-total").textContent = "₹" + total.toLocaleString("en-IN");
-      document.getElementById("payBtn").textContent = "Place Order - ₹" + total.toLocaleString("en-IN");
-
-      checkoutData.total = total;
-      checkoutData.items = data;
-
-      await loadAddress();
-
-    } catch (err) {
-      console.error("Cart loading error:", err);
-      alert("Failed to load cart: " + err.message);
-      window.location.href = "product.html";
     }
-    return;
-  }
 
-  // Default fallback (shouldn't reach here)
-  alert("Invalid checkout type");
-  window.location.href = "product.html";
+    document.getElementById("summary-items").innerHTML = html;
+    document.getElementById("summary-total").textContent = "₹" + total;
+    document.getElementById("payBtn").textContent = "Pay ₹" + total;
+
+    checkoutData.total = total;
+    checkoutData.items = data;
+
+await loadAddress();
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load checkout");
+  }
 }
 
-// ================= LOAD ADDRESS =================
+/* ================= LOAD ADDRESS ================= */
+
 async function loadAddress() {
   const res = await fetch(`${BACKEND}/api/profile/profiledata`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Authorization": "Bearer " + localStorage.getItem("token")
-    }
+    credentials: "include"
   });
-
   const data = await res.json();
   checkoutData.address = data.address;
+  renderAddress(data);
+}
+
+function renderAddress(data){
 
   if (!data.address) {
-    document.getElementById("address-box").innerHTML = "No address found. Add in profile.";
+    document.getElementById("address-box").innerHTML = `
+      <strong>No address found</strong><br>
+      Please add address in profile
+    `;
   } else {
+
     const addr = data.address;
+
     document.getElementById("address-box").innerHTML = `
       <strong>${data.username}</strong><br>
       ${addr.fullName}<br>
       ${addr.street}, ${addr.city}<br>
       ${addr.state} - ${addr.pincode}<br>
+      ${addr.country}<br>
       Phone: ${data.phone}
     `;
   }
 }
 
-// LOAD AFTER PAGE READY
-document.addEventListener("DOMContentLoaded", loadCheckout);
+loadCheckout();
 
-// ================= PAYMENT =================
+/* ================= PAYMENT (UNCHANGED) ================= */
+
 document.getElementById("payBtn").addEventListener("click", async () => {
+
   if (!checkoutData.total || checkoutData.total <= 0) {
     alert("Cart is empty");
     return;
   }
 
-  // Get selected payment method
-  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-  console.log("Selected payment method:", paymentMethod);
-
   if (!checkoutData.address) {
-    alert("Please set delivery address first!");
+    alert("Please add delivery address first");
+    window.location.href = "/profile.html";
     return;
   }
 
   try {
-    // ========== COD Flow ==========
-    if (paymentMethod === "COD") {
-      const res = await fetch(`${BACKEND}/api/place-order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + localStorage.getItem("token")
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          paymentMethod: "COD",
-          address: checkoutData.address,
-          items: checkoutData.items,
-          totalAmount: checkoutData.total
-        })
-      });
 
-      const data = await res.json();
-      if (!data.success) {
-        alert("Error: " + (data.message || "Failed to place order"));
-        return;
-      }
+    const orderRes = await fetch(`${BACKEND}/api/payment/create-order`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
+      },
+      body: JSON.stringify({
+        amount: checkoutData.total
+      })
+    });
 
-      alert("Order placed successfully with Cash on Delivery!");
-      window.location.href = `success.html?orderId=${data.orderId}&method=COD`;
+    const order = await orderRes.json();
+
+    if (!order.id) {
+      alert("Order creation failed");
       return;
     }
 
-    // ========== ONLINE Payment Flow ==========
-    if (paymentMethod === "ONLINE") {
-      const res = await fetch(`${BACKEND}/api/place-order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + localStorage.getItem("token")
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          paymentMethod: "ONLINE",
-          address: checkoutData.address,
-          items: checkoutData.items,
-          totalAmount: checkoutData.total
-        })
-      });
+    const options = {
+      key: RAZORPAY_KEY,
+      amount: order.amount,
+      currency: "INR",
+      name: "Sakhi Enterprises",
+      description: "Order Payment",
+      order_id: order.id,
 
-      const orderData = await res.json();
-      if (!orderData.success) {
-        alert("Error: " + (orderData.message || "Failed to create order"));
-        return;
-      }
+      handler: async function (response) {
 
-      // Open Razorpay
-      const options = {
-        key: RAZORPAY_KEY,
-        amount: orderData.razorpayOrder.amount,
-        currency: orderData.razorpayOrder.currency,
-        name: "Sakhi Enterprises",
-        order_id: orderData.razorpayOrder.id,
-        handler: async function (response) {
-          // Verify payment
-          const verifyRes = await fetch(`${BACKEND}/api/verify-payment`, {
+        try {
+
+          await fetch(`${BACKEND}/api/payment/verify`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Authorization": "Bearer " + localStorage.getItem("token")
+              Authorization: "Bearer " + localStorage.getItem("token")
             },
-            credentials: "include",
             body: JSON.stringify({
-              orderId: orderData.orderId,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature
+              ...response,
+              amount: checkoutData.total
             })
           });
 
-          const verifyData = await verifyRes.json();
-          if (verifyData.success) {
-            alert("Payment successful! Order confirmed.");
-            window.location.href = `success.html?orderId=${verifyData.orderId}&method=ONLINE`;
-          } else {
-            alert("Payment verification failed");
-          }
-        },
-        prefill: {
-          name: checkoutData.address.fullName,
-          email: "",
-          contact: ""
-        },
-        theme: {
-          color: "#2e7d32"
-        }
-      };
-
-      const rzp = new Razorpay(options);
-      rzp.open();
-    }
-  } catch (error) {
-    console.error("Checkout error:", error);
-    alert("Error during checkout: " + error.message);
-  }
+         await fetch(`${BACKEND}/order/place`, {
+  method: "POST",
+  credentials: "include",   // ⭐ THIS IS THE FIX
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    items: checkoutData.items,
+    address: checkoutData.address
+  })
 });
 
-// NAV
+          // Smart cart handling (safe for both direct & full cart checkout)
+
+if (sessionStorage.getItem("directOrders")) {
+
+  for (let item of checkoutData.items) {
+
+    if (item._id) {
+      await fetch(`${BACKEND}/cart/remove/${item._id}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+    }
+
+  }
+
+} else {
+
+ // Remove only ordered items from cart
+for (let item of checkoutData.items) {
+
+  if (item._id) {
+    await fetch(`${BACKEND}/cart/remove/${item._id}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
+  }
+
+}
+}
+          sessionStorage.removeItem("directOrders");
+
+          alert("Order Placed Successfully!");
+          window.location.href = "success.html";
+
+        } catch (err) {
+          console.error(err);
+          alert("Something went wrong");
+        }
+
+      },
+
+      theme: { color: "#2e7d32" }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+
+  } catch (err) {
+    console.error(err);
+    alert("Payment failed. Try again.");
+  }
+
+});
+
+/* ================= NAV ================= */
+
 function changeAddress() {
   window.location.href = "/profile.html";
 }
+
 function goToShop() {
-  // Go back to shop - clear checkout flags so new flow can start
-  sessionStorage.removeItem("checkoutType");
-  sessionStorage.removeItem("directOrder");
   window.location.href = "product.html";
 }
+
 </script>
 
 </body>

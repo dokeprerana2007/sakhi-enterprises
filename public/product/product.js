@@ -348,8 +348,8 @@ let products = [
     type:'Plastic / Poly',
     price:28,
     images:[
-      'Stand-up Zip-Lock Pouches1.jpg',
-      'Stand-up Zip-Lock Pouches2.jpg',
+      'Stand-Up Zip-Lock Pouches1.jpg',
+      'Stand-Up Zip-Lock Pouches2.jpg',
       'Stand-Up Zip-Lock Pouches (Food Grade)2.jpg',
       'Stand-Up Zip-Lock Pouches (Food Grade)3.jpg',
       'Stand-Up Zip-Lock Pouches (Food Grade)4.jpg',
@@ -1231,22 +1231,32 @@ orderNowBtn.addEventListener("click", () => {
   const item = getCurrentProductConfiguration();
   if (!item) return;
 
-  // ✅ CLEAR any previous checkout data
-  sessionStorage.removeItem("checkoutType");
-  sessionStorage.removeItem("directOrder");
-  localStorage.removeItem("checkoutType");
+  // Read existing checkout items (persist previous selections)
+  let checkoutItems = [];
+  try {
+    checkoutItems = JSON.parse(sessionStorage.getItem("checkoutItems") || "[]");
+    if (!Array.isArray(checkoutItems)) checkoutItems = [];
+  } catch (err) {
+    checkoutItems = [];
+  }
 
-  // ✅ Save single product for direct checkout
-  sessionStorage.setItem("directOrder", JSON.stringify({
+  // Add current product to checkoutItems
+  const newItem = {
     productId: item.id,
     name: item.name,
     price: item.unitPrice,
     quantity: item.quantity,
     image: currentImages[0]
-  }));
+  };
 
-  // ✅ Flag this as direct/single-product checkout
+  checkoutItems.push(newItem);
+  sessionStorage.setItem("checkoutItems", JSON.stringify(checkoutItems));
+
+  // Ensure checkout type is direct (from product browser flow)
   sessionStorage.setItem("checkoutType", "DIRECT_ORDER");
+
+  // Keep data for restored checkout
+  sessionStorage.removeItem("directOrder");
 
   // Go to checkout
   window.location.href = "/checkout.html";

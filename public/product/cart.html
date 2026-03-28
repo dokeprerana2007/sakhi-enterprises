@@ -333,7 +333,7 @@ function orderSingle(id){
 // ✅ CART CHECKOUT - properly flag cart flow
 function proceedToCartCheckout(){
   sessionStorage.removeItem("directOrder");
-  sessionStorage.removeItem("checkoutType");
+  sessionStorage.removeItem("checkoutItems"); // clear direct buildup when switching to cart checkout
   sessionStorage.setItem("checkoutType", "CART_CHECKOUT");
   window.location.href = "checkout.html";
 }
