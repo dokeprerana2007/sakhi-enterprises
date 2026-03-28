@@ -45,7 +45,7 @@ let products = [
     type:'Corrugated Fiberboard',
     price:150,
     images:[
-      'Kraft Carton Shipping Boxes1.jpg',
+      'kraft box.jpg',
       'Kraft Carton Shipping Boxes.jpg',
       'Kraft Carton Shipping Boxes4.jpg',
       'Kraft Carton Shipping Boxes3.jpg',
